@@ -1,13 +1,18 @@
-import './App.css'
+import { NavBar } from "./components/NavBar"
+import { HeroSection } from "./components/HeroSection"
+import ArticleSection from "./components/ArticleSection"
+import Footer from "./components/Footer"
+
 
 function App() {
  
 
   return (
     <>
-    <section>
-      <h1 className='text-3xl'>My First React App on Vite</h1>
-    </section>
+    <NavBar />
+    <HeroSection />
+    <ArticleSection />
+    <Footer />
     </>
   )
 }
