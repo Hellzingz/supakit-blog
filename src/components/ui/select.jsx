@@ -90,6 +90,7 @@ function SelectLabel({
 function SelectItem({
   className,
   children,
+  onChange,
   ...props
 }) {
   return (
