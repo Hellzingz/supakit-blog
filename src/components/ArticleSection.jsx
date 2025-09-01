@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
     Select,
     SelectContent,
@@ -8,16 +8,26 @@ import {
   } from "@/components/ui/select"
 import { Input } from "@/components/ui/input"
 import { Search } from 'lucide-react';
+import axios from 'axios';
 import BlogCard from './BlogCard';
-import { blogPosts } from '../data/blogPosts';
 
 function ArticleSection() {
 
     const [selectedCategory,setSelectedCategory] = useState("Highlight")
     const catagories = ["Highlight", "Cat", "Inspiration", "General"]
+    const [posts, setPosts] = useState([])
 
+    const getData = async () => {
+        const {data} = await axios.get('https://blog-post-project-api.vercel.app/posts')
+        setPosts(data.posts)
+    }
 
-    const filtered = blogPosts.filter(post=>post.category === selectedCategory)
+    useEffect(() => {
+        getData()
+    }, [])
+    
+
+    const filtered = posts.filter(post=>post.category === selectedCategory)
 
     function handleCatagory(e){
         e.preventDefault()
@@ -61,7 +71,7 @@ function ArticleSection() {
             </div>
             <div className='grid grid-cols-1 md:grid-cols-2 mt-10 gap-10'>
                 { selectedCategory === "Highlight" ?
-                blogPosts.map((post, index) => (
+                posts.map((post, index) => (
                 <BlogCard key={index} post={post} />
                 )) :
                 filtered.map((post, index) => (

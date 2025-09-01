@@ -8,7 +8,7 @@ export function NavBar() {
 
   return (
     <>
-        <nav className='h-[80px] flex items-center justify-between px-10 py-4 border-b border-[#DAD6D1] bg-[#F9F8F6]'>
+        <nav className='mx-auto h-[80px] flex items-center justify-between px-20 py-10 border-b border-[#DAD6D1] bg-[#F9F8F6]'>
             <div>
                 <img src={Logo} alt="" />
             </div>
