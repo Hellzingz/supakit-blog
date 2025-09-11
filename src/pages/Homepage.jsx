@@ -3,9 +3,11 @@ import ArticleSection from "@/components/ArticleSection"
 
 function Homepage() {
   return (
-    <>
-        <HeroSection />
-        <ArticleSection />
+    <>  
+    <div className="container mx-auto px-5">
+    <HeroSection />
+    <ArticleSection />
+    </div>
     </>
   )
 }

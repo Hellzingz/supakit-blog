@@ -3,7 +3,7 @@ import Hero from '../assets/img/hero.jpg'
 
 export function HeroSection() {
   return (
-    <section className="container px-13 py-8 lg:py-16 mx-auto">
+    <section className="container py-8 mx-auto lg:py-16">
       <div className="flex flex-col lg:flex-row items-center gap-6">
         <div className="lg:w-1/3 mb-8 lg:mb-0 lg:pr-8 text-start lg:text-end">
           <h1 className="text-4xl lg:text-5xl font-semibold mb-4">
