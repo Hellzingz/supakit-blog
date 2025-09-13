@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
 import { NavBar } from "@/components/NavBar";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/authContext";
+
 
 function RegisterPage() {
   const [name, setName] = useState("");
@@ -13,44 +14,54 @@ function RegisterPage() {
   const [isErrorName, setIsErrorName] = useState(false);
   const [isErrorUsername, setIsErrorUsername] = useState({});
   const [isErrorPassword, setIsErrorPassword] = useState(false);
-  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+
+  const { register } = useAuth();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    try {
+      let valid = true;
 
-    let valid = true;
+      if (!name.trim()) {
+        setIsErrorName(true);
+        valid = false;
+      } else {
+        setIsErrorName(false);
+      }
 
-    if (!name.trim()) {
-      setIsErrorName(true);
-      valid = false;
-    } else {
-      setIsErrorName(false);
-    }
+      if (!username.trim()) {
+        setIsErrorUsername();
+        valid = false;
+      } else {
+        setIsErrorUsername(false);
+      }
 
-    if (!username.trim()) {
-      setIsErrorUsername();
-      valid = false;
-    } else {
-      setIsErrorUsername(false);
-    }
+      if (!email.trim()) {
+        setIsErrorEmail(true);
+        valid = false;
+      } else {
+        setIsErrorEmail(false);
+      }
 
-    if (!email.trim()) {
-      setIsErrorEmail(true);
-      valid = false;
-    } else {
-      setIsErrorEmail(false);
-    }
+      if (!password.trim()) {
+        setIsErrorPassword(true);
+        valid = false;
+      } else {
+        setIsErrorPassword(false);
+      }
 
-    if (!password.trim()) {
-      setIsErrorPassword(true);
-      valid = false;
-    } else {
-      setIsErrorPassword(false);
-    }
-
-    if (valid) {
-      console.log("Register Successfully");
-      navigate("/");
+      if (valid) {
+        const data = {
+          name: name,
+          username: username,
+          email: email,
+          password: password,
+        };
+        register(data); 
+      }
+    } catch (error) {
+      console.log(error);
     }
   };
   return (
@@ -74,7 +85,7 @@ function RegisterPage() {
                 type="text"
                 placeholder="Name"
                 value={name}
-                onChange={(e) => setUsername(e.target.value)}
+                onChange={(e) => setName(e.target.value)}
                 className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
                   isErrorName ? "border-red-500" : ""
                 }`}

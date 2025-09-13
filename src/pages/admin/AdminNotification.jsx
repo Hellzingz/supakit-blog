@@ -26,7 +26,7 @@ function AdminNotification() {
     },
   ];
   return (
-    <div className="flex w-full h-screen bg-gray-100">
+    <div className="flex w-full bg-gray-100">
       <main className="flex-1 px-10 bg-gray-50 overflow-auto">
         <div className="flex justify-between items-center border-b py-10 mb-6">
           <h2 className="text-2xl font-semibold">Notification</h2>

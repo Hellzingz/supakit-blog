@@ -12,7 +12,7 @@ function ViewPostPage() {
   const { id } = useParams();
   async function getData() {
     const { data } = await axios.get(
-      `https://blog-post-project-api.vercel.app/posts/${id}`
+      `http://localhost:4000/posts/${id}`
     );
     setData(data);
   }

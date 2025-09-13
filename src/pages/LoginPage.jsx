@@ -1,15 +1,16 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { useNavigate } from "react-router-dom";
 import { NavBar } from "@/components/NavBar";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/authContext";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isErrorEmail, setIsErrorEmail] = useState(false);
   const [isErrorPassword, setIsErrorPassword] = useState(false);
-  const navigate = useNavigate();
+
+  const {login} = useAuth()
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -31,12 +32,11 @@ function LoginPage() {
     }
 
     if (valid) {
-      // Submit the login form
-      console.log("Logging in with:", { email, password });
-      // Add logic for login submission (e.g., API call)
-
-      // Navigate to a new page after login
-      navigate("/");
+      const data = {
+        email: email,
+        password: password
+      }
+      login(data)
     }
   };
   return (

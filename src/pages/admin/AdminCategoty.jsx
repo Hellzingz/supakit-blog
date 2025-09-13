@@ -1,13 +1,6 @@
 import { PenSquare, Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import {
   Table,
   TableBody,
@@ -16,13 +9,31 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
 function AdminCategoty() {
 
-    const categories = [
-        { name: "Cat" },
-        { name: "General" },
-        { name: "Inspiration" },
-      ];
+  const [categories, setCategories] = useState([])
+  const navigate = useNavigate()
+  const {id} = useParams()
+
+    const getData = async()=>{
+      const {data} = await axios.get("http://localhost:4000/categories")
+      setCategories(data)
+    }
+
+    const handleDelete = async()=>{
+      await axios.delete(`http://localhost:4000/categories/${id}`)
+    }
+
+    useEffect(()=>{
+      getData()
+    },[])
+
+    const handleEdit = (id) =>{
+      navigate(`/admin/category/edit/${id}`);
+    }
 
     return (
       <div className="w-full">
@@ -48,10 +59,10 @@ function AdminCategoty() {
               <TableRow key={index}>
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell className="text-right flex">
-                  <Button variant="ghost" size="sm">
+                  <Button onClick={()=>handleEdit(category.id)} variant="ghost" size="sm">
                     <PenSquare className="h-4 w-4 hover:text-muted-foreground" />
                   </Button>
-                  <Button variant="ghost" size="sm">
+                  <Button onClick={()=>handleDelete(category.id)} variant="ghost" size="sm">
                     <Trash2 className="h-4 w-4 hover:text-muted-foreground" />
                   </Button>
                 </TableCell>

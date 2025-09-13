@@ -12,7 +12,7 @@ import axios from "axios";
 import BlogCard from "./BlogCard";
 
 function ArticleSection() {
-  const [selectedCategory, setSelectedCategory] = useState("Highlight");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const catagories = ["Highlight", "Cat", "Inspiration", "General"];
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1); // Current page state
@@ -24,7 +24,7 @@ function ArticleSection() {
     const fetchPosts = async () => {
       try {   
         const response = await axios.get(
-            `https://blog-post-project-api.vercel.app/posts?page=${page}&limit=6&category=${selectedCategory}`
+            `http://localhost:4000/posts?page=${page}&limit=6&category=${selectedCategory}`
           );
         setPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
         setIsLoading(false); // Set isLoading to false after fetching
@@ -44,18 +44,14 @@ function ArticleSection() {
     setPage((prevPage) => prevPage + 1); // Increment page number to load more posts
   };
 
-  const filtered = posts.filter((post) => post.category === selectedCategory);
+  // const filtered = posts.filter((post) => post.category === selectedCategory);
 
   function handleCatagory(e) {
     e.preventDefault();
     setSelectedCategory(e.target.value);
     setPosts([]);
     setPage(1);
-    setHasMore(true);
-
-
-    console.log(posts);
-    
+    setHasMore(true);  
   }
 
   return (
@@ -81,7 +77,7 @@ function ArticleSection() {
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="Highlight">Highlight</SelectItem>
+                <SelectItem >Highlight</SelectItem>
                 <SelectItem value="Cat">Cat</SelectItem>
                 <SelectItem value="Inspiration">Inspiration</SelectItem>
                 <SelectItem value="General">General</SelectItem>

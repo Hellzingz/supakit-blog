@@ -1,6 +1,6 @@
 import { PenSquare, Trash2 } from "lucide-react";
-import { Button } from "../ui/button";
-import { Input } from "../ui/input";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
 import {
   Select,
   SelectContent,
@@ -16,41 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
-const articles = [
-  {
-    title:
-      "Understanding Cat Behavior: Why Your Feline Friend Acts the Way They Do",
-    category: "Cat",
-    status: "Published",
-  },
-  {
-    title: "The Fascinating World of Cats: Why We Love Our Furry Friends",
-    category: "Cat",
-    status: "Published",
-  },
-  {
-    title: "Finding Motivation: How to Stay Inspired Through Life's Challenges",
-    category: "General",
-    status: "Published",
-  },
-  {
-    title:
-      "The Science of the Cat's Purr: How It Benefits Cats and Humans Alike",
-    category: "Cat",
-    status: "Published",
-  },
-  {
-    title: "Top 10 Health Tips to Keep Your Cat Happy and Healthy",
-    category: "Cat",
-    status: "Published",
-  },
-  {
-    title: "Unlocking Creativity: Simple Habits to Spark Inspiration Daily",
-    category: "Inspiration",
-    status: "Published",
-  },
-];
+import axios from "axios";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const categories = [
   { name: "Cat" },
@@ -62,18 +30,44 @@ const status = [
 "Publish" ,
  "Draft"
 ];
-function AdminArticle({setManage}) {
 
-  const handleClick = () => {
-    setManage("create");
+
+function AdminArticle() {
+
+  const [posts, setPosts] = useState([])
+  const navigate = useNavigate()
+  const getPosts = async () =>{
+    const {data} =  await axios.get("http://localhost:4000/posts?limit=20")
+    setPosts(data.posts);
+    
+
   }
+
+  useEffect(()=>{
+    getPosts()
+  },[])
+
+  const handleEdit = (id) =>{
+    navigate(`/admin/edit/${id}`);
+  }
+
+  const handleCreate = () =>{
+    navigate(`/admin/create`);
+  }
+
+  const handleDelete = async (id) =>{
+    await axios.delete(`http://localhost:4000/posts/${id}`)
+    getPosts()
+  }
+
+
 
   return (
     <div className="w-full">
       <div className="flex justify-between items-center p-10 mb-6 border-b">
         <h2 className="text-2xl font-semibold">Article management</h2>
         <Button 
-        onClick={handleClick}
+        onClick={handleCreate}
         className="px-8 py-2 rounded-full cursor-pointer">
           + Create article
         </Button>
@@ -118,20 +112,20 @@ function AdminArticle({setManage}) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {articles.map((article, index) => (
+            {posts.map((post, index) => (
               <TableRow key={index}>
-                <TableCell className="font-medium">{article.title}</TableCell>
-                <TableCell>{article.category}</TableCell>
+                <TableCell className="font-medium">{post.title}</TableCell>
+                <TableCell>{post.category}</TableCell>
                 <TableCell>
                   <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                    {article.status}
+                    {post.status}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" onClick={()=>setManage("edit")}>
+                  <Button variant="ghost" size="sm" onClick={()=>{handleEdit(post.id)}}>
                     <PenSquare className="h-4 w-4 hover:text-muted-foreground" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick="delete">
+                  <Button variant="ghost" size="sm" onClick={()=>handleDelete(post.id)}>
                     <Trash2 className="h-4 w-4 hover:text-muted-foreground" />
                   </Button>
                 </TableCell>
