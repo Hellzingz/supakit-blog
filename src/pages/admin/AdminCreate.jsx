@@ -12,8 +12,13 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/authContext";
 
 function AdminCreate() {
+  const {state} = useAuth()
+
+  
   const [post, setPost] = useState({
     title: "",
     description: "",
@@ -23,6 +28,7 @@ function AdminCreate() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate()
 
   // ฟังก์ชันสำหรับจัดการเมื่อมีการเลือกไฟล์
   const handleFileChange = (event) => {
@@ -79,15 +85,19 @@ function AdminCreate() {
     formData.append("status_id", statusId);
     formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
 
+    console.log(formData);
+    
+
     try {
       // ส่งข้อมูลไปยัง Backend
-      await axios.post("http://localhost:4000/posts/", formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/posts/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
         },
       });
       toastSuccess("Created Successfully");
+      navigate('/admin')
     } catch (error) {
       console.error("Error creating post:", error);
       toastError("Create Failed");
@@ -181,7 +191,7 @@ function AdminCreate() {
             <Input
               id="author"
               name="author"
-              defaultValue="Thompson P."
+              defaultValue={state.user.name}
               className="mt-1 max-w-lg"
               disabled
             />

@@ -24,7 +24,7 @@ function ResetPassword() {
     }
     try {
       setIsSubmitting(true);
-      await axios.put("http://localhost:4000/auth/reset-password", {
+      await axios.put(`${import.meta.env.VITE_API_URL}/auth/reset-password`, {
         oldPassword,
         newPassword,
       });

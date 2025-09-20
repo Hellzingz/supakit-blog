@@ -3,67 +3,42 @@ import { Input } from "@/components/ui/input";
 import { NavBar } from "@/components/NavBar";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
-
+import { registerValidate } from "@/utils/registerValidate";
 
 function RegisterPage() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isErrorEmail, setIsErrorEmail] = useState(false);
-  const [isErrorName, setIsErrorName] = useState(false);
-  const [isErrorUsername, setIsErrorUsername] = useState({});
-  const [isErrorPassword, setIsErrorPassword] = useState(false);
-
+  const [error, setError] = useState(null);
 
   const { register } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      let valid = true;
-
-      if (!name.trim()) {
-        setIsErrorName(true);
-        valid = false;
-      } else {
-        setIsErrorName(false);
+      let valid = registerValidate(name, username, email, password);
+      if(Object.keys(valid).length !== 0){
+       return setError(valid)
       }
-
-      if (!username.trim()) {
-        setIsErrorUsername();
-        valid = false;
-      } else {
-        setIsErrorUsername(false);
-      }
-
-      if (!email.trim()) {
-        setIsErrorEmail(true);
-        valid = false;
-      } else {
-        setIsErrorEmail(false);
-      }
-
-      if (!password.trim()) {
-        setIsErrorPassword(true);
-        valid = false;
-      } else {
-        setIsErrorPassword(false);
-      }
-
-      if (valid) {
-        const data = {
-          name: name,
-          username: username,
-          email: email,
-          password: password,
-        };
-        register(data); 
-      }
+      
+      const data = {
+        name: name,
+        username: username,
+        email: email,
+        password: password,
+      };
+      console.log(valid,data);
+      register(data);
+      setName("")
+      setUsername("")
+      setEmail("")
+      setPassword("")
     } catch (error) {
       console.log(error);
     }
   };
+  
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
@@ -86,15 +61,9 @@ function RegisterPage() {
                 placeholder="Name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                  isErrorName ? "border-red-500" : ""
-                }`}
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
               />
-              {isErrorName && (
-                <p className="text-red-500 text-xs absolute">
-                  Name is required !!
-                </p>
-              )}
+              {error?.name && <p className="text-red-500">{error.name}</p> }
             </div>
             <div className="relative space-y-1">
               <label
@@ -109,15 +78,9 @@ function RegisterPage() {
                 placeholder="username"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                  isErrorUsername ? "border-red-500" : ""
-                }`}
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
               />
-              {isErrorUsername && (
-                <p className="text-red-500 text-xs absolute">
-                  Username is required !!
-                </p>
-              )}
+              {error?.username && <p className="text-red-500" >{error.username}</p> }
             </div>
             <div className="relative space-y-1">
               <label
@@ -128,19 +91,13 @@ function RegisterPage() {
               </label>
               <Input
                 id="email"
-                type="email"
+                type="text"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                  isErrorEmail ? "border-red-500" : ""
-                }`}
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
               />
-              {isErrorEmail && (
-                <p className="text-red-500 text-xs absolute">
-                  Please enter a valid email.
-                </p>
-              )}
+              {error?.email && <p className="text-red-500">{error.email}</p> }
             </div>
             <div className="relative space-y-1">
               <label
@@ -155,15 +112,9 @@ function RegisterPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                  isErrorPassword ? "border-red-500" : ""
-                }`}
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
               />
-              {isErrorPassword && (
-                <p className="text-red-500 text-xs absolute">
-                  Please enter your password.
-                </p>
-              )}
+              {error?.password && <p className="text-red-500">{error.password}</p> }
             </div>
             <div className="flex justify-center">
               <button

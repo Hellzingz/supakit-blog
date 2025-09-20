@@ -3,7 +3,7 @@ function PersonalCard() {
     <div className="sticky top-5 min-h-[376px] max-w-[343px] mt-10 bg-gray-100 rounded-xl flex flex-col border p-4">
       <div className="flex">
         <div className="flex gap-3 items-center">
-          <img src="" className="rounded-full size-20" />
+          <img className="rounded-full size-20" />
           <div className="flex flex-col gap-3">
             <p className="text-sm  text-gray-400">Author</p>
             <h2 className="text-xl font-semibold">Thompson P.</h2>

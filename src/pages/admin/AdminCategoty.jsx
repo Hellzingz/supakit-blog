@@ -11,25 +11,19 @@ import {
 } from "@/components/ui/table";
 import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-function AdminCategoty() {
+import useFetch from "@/hooks/useFetch";
 
-  const [categories, setCategories] = useState([])
+function AdminCategoty() {
   const navigate = useNavigate()
   const {id} = useParams()
 
-    const getData = async()=>{
-      const {data} = await axios.get("http://localhost:4000/categories")
-      setCategories(data)
-    }
+  // Get categories using useFetch
+  const { data: categories, fetchData } = useFetch(`${import.meta.env.VITE_API_URL}/categories`)
 
-    const handleDelete = async()=>{
-      await axios.delete(`http://localhost:4000/categories/${id}`)
-    }
-
-    useEffect(()=>{
-      getData()
-    },[])
+  const handleDelete = async()=>{
+    await axios.delete(`${import.meta.env.VITE_API_URL}/categories/${id}`)
+    fetchData() // Refresh data after delete
+  }
 
     const handleEdit = (id) =>{
       navigate(`/admin/category/edit/${id}`);

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
 import axios from "axios"
 import { toastSuccess, toastError } from "@/utils/toast"
+import useFetch from "@/hooks/useFetch"
 
 function AdminCategoryEdit() {
   const { id } = useParams()
@@ -11,20 +12,15 @@ function AdminCategoryEdit() {
   const [category, setCategory] = useState({name: ''})
   const [isLoading, setIsLoading] = useState(false)
 
+  // Get category data from server using useFetch
+  const { data: categoryData } = useFetch(`${import.meta.env.VITE_API_URL}/categories/${id}`)
 
-  // Get category data from server
+  // Update category state when data is fetched
   useEffect(() => {
-    const getCategory = async () => {
-      try {
-        const {data} = await axios.get(`http://localhost:4000/categories/${id}`)
-        setCategory(data)
-      } catch (error) {
-        console.error("Error fetching category:", error)
-        toastError("Failed to load category")
-      }
+    if (categoryData) {
+      setCategory(categoryData)
     }
-    getCategory()
-  }, [id])
+  }, [categoryData])
 
   console.log(category);
   
@@ -40,7 +36,7 @@ function AdminCategoryEdit() {
 
     setIsLoading(true)
     try {
-      await axios.put(`http://localhost:4000/categories/${id}`, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/categories/${id}`, {
         name: category.name
       })
       toastSuccess("Category updated successfully")

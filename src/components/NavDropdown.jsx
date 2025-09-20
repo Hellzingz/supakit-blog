@@ -20,11 +20,10 @@ function NavDropdown() {
     logout();
     navigate("/");
   };
-
   return (
     <div>
       <DropdownMenu>
-        <DropdownMenuTrigger><img src={state?.user?.profilePic} alt="profile-pic" width={35}/></DropdownMenuTrigger>
+        <DropdownMenuTrigger><img src={state?.user?.profilePic || <CgProfile/>} alt="profile-pic" width={35}/></DropdownMenuTrigger>
         <DropdownMenuContent>
           <DropdownMenuLabel>My Account</DropdownMenuLabel>
           <DropdownMenuSeparator />

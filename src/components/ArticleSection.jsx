@@ -22,12 +22,14 @@ function ArticleSection() {
   useEffect(() => {
     setIsLoading(true); // Set isLoading to true when starting to fetch
     const fetchPosts = async () => {
-      try {   
+      try {
         const response = await axios.get(
-            `http://localhost:4000/posts?page=${page}&limit=6&category=${selectedCategory}`
-          );
+          `${
+            import.meta.env.VITE_API_URL
+          }/posts?page=${page}&limit=6&category=${selectedCategory}`
+        );
+        console.log(response.data);
         setPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
-        setIsLoading(false); // Set isLoading to false after fetching
         if (response.data.currentPage >= response.data.totalPages) {
           setHasMore(false); // No more posts to load
         }
@@ -48,10 +50,14 @@ function ArticleSection() {
 
   function handleCatagory(e) {
     e.preventDefault();
-    setSelectedCategory(e.target.value);
+    if (e.target.value === "Highlight") {
+      setSelectedCategory("");
+    } else {
+      setSelectedCategory(e.target.value);
+    }
     setPosts([]);
     setPage(1);
-    setHasMore(true);  
+    setHasMore(true);
   }
 
   return (
@@ -73,11 +79,11 @@ function ArticleSection() {
                 setHasMore(true); // Reset "has more" state
               }}
             >
-              <SelectTrigger className="w-full py-3 rounded-sm text-muted-foregroun bg-white">
+              <SelectTrigger className="w-full py-3 rounded-sm text-muted-foreground bg-white">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem >Highlight</SelectItem>
+                <SelectItem>Highlight</SelectItem>
                 <SelectItem value="Cat">Cat</SelectItem>
                 <SelectItem value="Inspiration">Inspiration</SelectItem>
                 <SelectItem value="General">General</SelectItem>
@@ -105,7 +111,9 @@ function ArticleSection() {
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 mt-10 gap-10">
-        {posts.map((post, index) => <BlogCard key={index} post={post} />)}
+        {posts.map((post, index) => (
+          <BlogCard key={index} post={post} isLoading={isLoading} />
+        ))}
       </div>
       {hasMore && (
         <div className="text-center mt-8">
