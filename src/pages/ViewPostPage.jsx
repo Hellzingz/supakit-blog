@@ -1,27 +1,60 @@
 import { useParams } from "react-router-dom";
-import { useEffect, useState } from "react";
-import axios from "axios";
+// import { useEffect, useState } from "react";
+// import axios from "axios";
 import ReactMarkdown from "react-markdown";
+import AlertLogin from "@/components/AlertLogin";
 import { formatDate } from "@/utils/date";
-import LikeComment from "@/components/LikeComment";
-import { comments } from "@/data/comments";
 import PersonalCard from "@/components/PersonalCard";
+import useFetch from "@/hooks/useFetch";
+import CommentSection from "@/components/CommentSection";
+import LikeShare from "@/components/LikeShare";
+import { useState } from "react";
+import { useAuth } from "@/context/authContext";
 
 function ViewPostPage() {
-  const [data, setData] = useState([]);
+  // const [data, setData] = useState([]);
+  const [open, setOpen] = useState(false);
+  const { isAuthenticated } = useAuth();
   const { id } = useParams();
-  async function getData() {
-    const { data } = await axios.get(
-      `http://localhost:4000/posts/${id}`
-    );
-    setData(data);
-  }
+  
+  // ใช้ useFetch hook แทน
+  const { data, isLoading, error } = useFetch(`${import.meta.env.VITE_API_URL}/posts/${id}`);
+  
+  // Comment code เดิมไว้
+  // async function getData() {
+  //   const { data } = await axios.get(
+  //     `http://localhost:4000/posts/${id}`
+  //   );
+  //   setData(data);
+  // }
 
-  useEffect(() => {
-    getData();
-  }, [id]);
+  // useEffect(() => {
+  //   getData();
+  // }, [id]);
 
   // Share
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <section className="mx-auto px-5 mt-5">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading...</div>
+        </div>
+      </section>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <section className="mx-auto px-5 mt-5">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-red-500">Error: {error.message}</div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="mx-auto px-5 mt-5">
@@ -49,7 +82,8 @@ function ViewPostPage() {
                 <div className="sm:hidden">
         <PersonalCard />
       </div>
-                <LikeComment comments={comments} />
+                <LikeShare isAuthenticated={isAuthenticated} setOpen={setOpen}/>
+                <CommentSection isAuthenticated={isAuthenticated} setOpen={setOpen}/>
               </div>
               <div className="hidden sm:block sticky top-0 self-start w-80">
                 <PersonalCard />
@@ -57,6 +91,7 @@ function ViewPostPage() {
             </div>
         </div>
       </main>
+      <AlertLogin open={open} setOpen={setOpen} />
     </section>
   );
 }

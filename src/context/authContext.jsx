@@ -29,7 +29,7 @@ function AuthProvider(props) {
     try {
       setState((prevState) => ({ ...prevState, getUserLoading: true }));
       const response = await axios.get(
-        "http://localhost:4000/auth/get-user"
+        `${import.meta.env.VITE_API_URL}/auth/get-user`
       );
       setState((prevState) => ({
         ...prevState,
@@ -55,7 +55,7 @@ function AuthProvider(props) {
     try {
       setState((prevState) => ({ ...prevState, loading: true, error: null }));
       const response = await axios.post(
-        "http://localhost:4000/auth/login",
+        `${import.meta.env.VITE_API_URL}/auth/login`,
         data
       );
       const token = response.data.access_token;
@@ -79,19 +79,26 @@ function AuthProvider(props) {
   const register = async (data) => {
     try {
       setState((prevState) => ({ ...prevState, loading: true, error: null }));
-      await axios.post(
-        "http://localhost:4000/auth/register",
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/register`,
         data
       );
+      console.log("Register success:", response.data);
       setState((prevState) => ({ ...prevState, loading: false, error: null }));
       navigate("/login");
+      return { success: true };
     } catch (error) {
+      console.error("Register error:", {
+        status: error.response?.status,
+        data: error.response?.data,
+        message: error.message,
+      });
       setState((prevState) => ({
         ...prevState,
         loading: false,
-        error: error.response?.data?.error || "Registration failed",
+        error: error.response?.data?.message || error.response?.data?.error || "Registration failed",
       }));
-      return { error: state.error };
+      return { error: error.response?.data?.message || error.response?.data?.error || "Registration failed" };
     }
   };
 

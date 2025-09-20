@@ -11,6 +11,7 @@ function AdminProfile() {
     id: "",
     name: "",
     username: "",
+    email: "",
   });
   const { state } = useAuth();
   const [imageFile, setImageFile] = useState(null);
@@ -21,9 +22,12 @@ function AdminProfile() {
       id: state?.user.id,
       name: state?.user.name,
       username: state?.user.username,
+      email: state?.user.email,
       image: state?.user.profilePic,
     });
   }, []);
+
+  
 
   // ฟังก์ชันสำหรับจัดการเมื่อมีการเลือกไฟล์
   const handleFileChange = (event) => {
@@ -80,7 +84,7 @@ function AdminProfile() {
 
     try {
       // ส่งข้อมูลไปยัง Backend
-      await axios.put(`http://localhost:4000/auth/update-profile`, formData, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/auth/update-profile`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
@@ -164,10 +168,9 @@ function AdminProfile() {
               <Input
                 id="email"
                 name="email"
-                value={profile.email}
                 disabled
                 type="email"
-                defaultValue="thompson.p@gmail.com"
+                value={profile.email}
                 className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
               />
             </div>

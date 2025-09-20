@@ -3,41 +3,28 @@ import { Input } from "@/components/ui/input";
 import { NavBar } from "@/components/NavBar";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
+import { loginValidate } from "@/utils/loginValidate";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [isErrorEmail, setIsErrorEmail] = useState(false);
-  const [isErrorPassword, setIsErrorPassword] = useState(false);
+  const [error, setError] = useState(null);
 
-  const {login} = useAuth()
+  const { login } = useAuth();
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    let valid = true;
-
-    if (!email.trim()) {
-      setIsErrorEmail(true);
-      valid = false;
-    } else {
-      setIsErrorEmail(false);
+    let valid = loginValidate(email, password);
+    if (Object.keys(valid).length !== 0) {
+      return setError(valid)
     }
 
-    if (!password.trim()) {
-      setIsErrorPassword(true);
-      valid = false;
-    } else {
-      setIsErrorPassword(false);
-    }
-
-    if (valid) {
-      const data = {
-        email: email,
-        password: password
-      }
-      login(data)
-    }
+    const data = {
+      email: email,
+      password: password,
+    };
+    login(data);
   };
   return (
     <div className="flex flex-col min-h-screen">
@@ -57,19 +44,13 @@ function LoginPage() {
               </label>
               <Input
                 id="email"
-                type="email"
+                type="text"
                 placeholder="Email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                  isErrorEmail ? "border-red-500" : ""
-                }`}
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
               />
-              {isErrorEmail && (
-                <p className="text-red-500 text-xs absolute">
-                  Please enter a valid email.
-                </p>
-              )}
+              {error?.email && <p className="text-red-500">{error.email}</p>}
             </div>
             <div className="relative space-y-1">
               <label
@@ -84,15 +65,9 @@ function LoginPage() {
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                  isErrorPassword ? "border-red-500" : ""
-                }`}
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
               />
-              {isErrorPassword && (
-                <p className="text-red-500 text-xs absolute">
-                  Please enter your password.
-                </p>
-              )}
+              {error?.password && <p className="text-red-500">{error.password}</p>}
             </div>
             <div className="flex justify-center">
               <button
@@ -103,7 +78,10 @@ function LoginPage() {
               </button>
             </div>
             <p className="text-center text-gray-400">
-              Don't have any account? <Link to="/register" className="underline ml-1 text-gray-600">Sign up</Link>
+              Don't have any account?{" "}
+              <Link to="/register" className="underline ml-1 text-gray-600">
+                Sign up
+              </Link>
             </p>
           </form>
         </div>

@@ -13,6 +13,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import useFetch from "@/hooks/useFetch";
 
 function AdminEdit() {
   const { id } = useParams();
@@ -25,17 +26,20 @@ function AdminEdit() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const getPost = async () => {
-    const { data } = await axios.get(`http://localhost:4000/posts/${id}`);
-    setPost(data);
-  };
-console.log(post);
 
+  // Get post data using useFetch
+  const { data: postData } = useFetch(
+    `${import.meta.env.VITE_API_URL}/posts/${id}`
+  );
 
-
+  // Update post state when data is fetched
   useEffect(() => {
-    getPost();
-  },[]);
+    if (postData) {
+      setPost(postData);
+    }
+  }, [postData]);
+
+  console.log(post);
 
   // ฟังก์ชันสำหรับจัดการเมื่อมีการเลือกไฟล์
   const handleFileChange = (event) => {
@@ -94,23 +98,24 @@ console.log(post);
     // ส่งรูปใหม่ถ้ามี ถ้าไม่มีใช้รูปเดิม
     if (imageFile) {
       formData.append("imageFile", imageFile.file);
-    } else if (post.image && post.image.trim() !== "") {
+    }
+    if (post.image && post.image.trim() !== "") {
       formData.append("image", post.image); // ใช้รูปเดิมถ้ามี
     }
     // ถ้าไม่มีรูปเลย ไม่ต้อง append image field
 
     try {
       // ส่งข้อมูลไปยัง Backend
-      await axios.put(`http://localhost:4000/posts/${id}`, formData, {
+      await axios.put(`${import.meta.env.VITE_API_URL}/posts/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
         },
       });
-      toastSuccess("Created Successfully");
+      toastSuccess("Edited Successfully");
     } catch (error) {
-      console.error("Error creating post:", error);
-      toastError("created Failed");
+      console.error("Error edited post:", error);
+      toastError("Edited Failed");
     } finally {
       setIsLoading(false);
     }
@@ -160,7 +165,7 @@ console.log(post);
                       className="max-w-full max-h-48 object-contain"
                     />
                   ) : (
-                    <img src={post.image}/>
+                    <img src={post.image} />
                   )}
                 </div>
               </div>

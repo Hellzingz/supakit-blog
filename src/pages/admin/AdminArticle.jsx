@@ -17,8 +17,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useFetch from "@/hooks/useFetch";
 
 const categories = [
   { name: "Cat" },
@@ -26,49 +26,64 @@ const categories = [
   { name: "Inspiration" },
 ];
 
-const status = [
-"Publish" ,
- "Draft"
-];
-
+const status = ["Publish", "Draft"];
 
 function AdminArticle() {
 
-  const [posts, setPosts] = useState([])
-  const navigate = useNavigate()
-  const getPosts = async () =>{
-    const {data} =  await axios.get("http://localhost:4000/posts?limit=20")
-    setPosts(data.posts);
-    
+  const navigate = useNavigate();
 
-  }
 
-  useEffect(()=>{
-    getPosts()
-  },[])
+  const { data, isLoading, error, fetchData } = useFetch(
+    `${import.meta.env.VITE_API_URL}/posts?page=1&limit=20`
+  );
 
-  const handleEdit = (id) =>{
+
+
+
+  const handleEdit = (id) => {
     navigate(`/admin/edit/${id}`);
-  }
+  };
 
-  const handleCreate = () =>{
+  const handleCreate = () => {
     navigate(`/admin/create`);
+  };
+
+  const handleDelete = async (id) => {
+    await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
+    // getPosts()
+    fetchData(); // ใช้ fetchData แทน getPosts
+  };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="w-full">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-lg">Loading articles...</div>
+        </div>
+      </div>
+    );
   }
 
-  const handleDelete = async (id) =>{
-    await axios.delete(`http://localhost:4000/posts/${id}`)
-    getPosts()
+  // Error state
+  if (error) {
+    return (
+      <div className="w-full">
+        <div className="flex justify-center items-center h-64">
+          <div className="text-red-500">Error: {error.message}</div>
+        </div>
+      </div>
+    );
   }
-
-
 
   return (
     <div className="w-full">
       <div className="flex justify-between items-center p-10 mb-6 border-b">
         <h2 className="text-2xl font-semibold">Article management</h2>
-        <Button 
-        onClick={handleCreate}
-        className="px-8 py-2 rounded-full cursor-pointer">
+        <Button
+          onClick={handleCreate}
+          className="px-8 py-2 rounded-full cursor-pointer"
+        >
           + Create article
         </Button>
       </div>
@@ -112,20 +127,30 @@ function AdminArticle() {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {posts.map((post, index) => (
+            {data?.posts?.map((post, index) => (
               <TableRow key={index}>
                 <TableCell className="font-medium">{post.title}</TableCell>
                 <TableCell>{post.category}</TableCell>
                 <TableCell>
-                  <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+                  <span className="inline-flex capitalize items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
                     {post.status}
                   </span>
                 </TableCell>
                 <TableCell className="text-right">
-                  <Button variant="ghost" size="sm" onClick={()=>{handleEdit(post.id)}}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      handleEdit(post.id);
+                    }}
+                  >
                     <PenSquare className="h-4 w-4 hover:text-muted-foreground" />
                   </Button>
-                  <Button variant="ghost" size="sm" onClick={()=>handleDelete(post.id)}>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => handleDelete(post.id)}
+                  >
                     <Trash2 className="h-4 w-4 hover:text-muted-foreground" />
                   </Button>
                 </TableCell>
