@@ -1,12 +1,11 @@
 import { formatDate } from "../utils/date";
 import { Link } from "react-router-dom";
-function BlogCard({ post, isLoading }) {
+function BlogCard({ post }) {
   const { image, category, title, description, author, date } = post;
   const formattedDate = formatDate(date);
 
   return (
     <>
-      {isLoading && (
         <div className="flex flex-col gap-4">
           <Link
             to={`post/${post.id}`}
@@ -47,7 +46,6 @@ function BlogCard({ post, isLoading }) {
             </div>
           </div>
         </div>
-      )}
     </>
   );
 }

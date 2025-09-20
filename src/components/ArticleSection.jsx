@@ -22,13 +22,16 @@ function ArticleSection() {
   useEffect(() => {
     setIsLoading(true); // Set isLoading to true when starting to fetch
     const fetchPosts = async () => {
+      const params = new URLSearchParams({
+        page: page,
+        limit: 6,
+        category: selectedCategory,
+        status: "publish",
+      });
       try {
         const response = await axios.get(
-          `${
-            import.meta.env.VITE_API_URL
-          }/posts?page=${page}&limit=6&category=${selectedCategory}`
+          `${import.meta.env.VITE_API_URL}/posts?${params.toString()}`
         );
-        console.log(response.data);
         setPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
         if (response.data.currentPage >= response.data.totalPages) {
           setHasMore(false); // No more posts to load
@@ -36,6 +39,8 @@ function ArticleSection() {
       } catch (error) {
         console.log("Failed to fetch posts:", error);
         setIsLoading(false); // Set loading to false in case of error
+      } finally {
+        setIsLoading(false);
       }
     };
     fetchPosts(); // Call fetchPosts within useEffect
@@ -48,7 +53,7 @@ function ArticleSection() {
 
   // const filtered = posts.filter((post) => post.category === selectedCategory);
 
-  function handleCatagory(e) {
+  function handleCategory(e) {
     e.preventDefault();
     if (e.target.value === "Highlight") {
       setSelectedCategory("");
@@ -97,7 +102,7 @@ function ArticleSection() {
               key={index}
               value={catagory}
               disabled={catagory === selectedCategory}
-              onClick={handleCatagory}
+              onClick={handleCategory}
               className={`px-4 py-3 text-[#75716B] rounded-sm hover:bg-[#DAD6D1] hover:text-[#43403B]
                             ${
                               catagory === selectedCategory
