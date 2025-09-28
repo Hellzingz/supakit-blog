@@ -23,8 +23,8 @@ function AdminCreate() {
     title: "",
     description: "",
     content: "",
-    category_id: null,
-    status_id: null,
+    category_id: "",
+    status_id: "",
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -74,6 +74,8 @@ function AdminCreate() {
     }
     setIsLoading(true);
 
+    
+
     // สร้าง FormData สำหรับการส่งข้อมูลแบบ multipart/form-data
     const formData = new FormData();
 
@@ -97,6 +99,7 @@ function AdminCreate() {
         },
       });
       toastSuccess("Created Successfully");
+      console.log(post);    
       navigate('/admin')
     } catch (error) {
       console.error("Error creating post:", error);
@@ -180,8 +183,8 @@ function AdminCreate() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="1">Cat</SelectItem>
-                <SelectItem value="2">General</SelectItem>
-                <SelectItem value="3">Inspiration</SelectItem>
+                <SelectItem value="3">General</SelectItem>
+                <SelectItem value="2">Inspiration</SelectItem>
               </SelectContent>
             </Select>
           </div>

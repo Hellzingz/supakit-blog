@@ -27,8 +27,6 @@ function AdminProfile() {
     });
   }, []);
 
-  
-
   // ฟังก์ชันสำหรับจัดการเมื่อมีการเลือกไฟล์
   const handleFileChange = (event) => {
     const file = event.target.files[0];
@@ -77,19 +75,23 @@ function AdminProfile() {
     const formData = new FormData();
 
     // เพิ่มข้อมูลทั้งหมดลงใน FormData
-    formData.append("id", profile.name);
+    formData.append("id", profile.id);
     formData.append("name", profile.name);
     formData.append("username", profile.username);
     formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
 
     try {
       // ส่งข้อมูลไปยัง Backend
-      await axios.put(`${import.meta.env.VITE_API_URL}/auth/update-profile`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
-        },
-      });
+      await axios.put(
+        `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
+          },
+        }
+      );
       toastSuccess("Updated Successfully");
     } catch (error) {
       console.error("Error creating post:", error);

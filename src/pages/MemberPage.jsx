@@ -1,12 +1,27 @@
 import UserProfile from "@/components/user/UserProfile";
 import { UserRound } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/authContext";
 import ResetPassword from "@/components/user/ResetPassword";
 
 function MemberPage() {
   const { state } = useAuth();
-  const [user, setUser] = useState(state.user);
+  const [user, setUser] = useState(state?.user);
+  
+console.log(user);
+
+  useEffect(() => {
+    setUser(state?.user ? {
+      id: state.user.id,
+      name: state.user.name,
+      username: state.user.username,
+      email: state.user.email,
+      image: state.user.profilePic,
+    } : null);
+  }, [state?.user]);
+
+  
+  
   const [manage, setManage] = useState("profile");
   return (
     <div className="container mx-auto mt-20">
