@@ -14,27 +14,14 @@ import { useAuth } from "@/context/authContext";
 function ViewPostPage() {
   // const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, state } = useAuth();
   const { id } = useParams();
-  
-  // ใช้ useFetch hook แทน
-  const { data, isLoading, error } = useFetch(`${import.meta.env.VITE_API_URL}/posts/${id}`);
-  
-  // Comment code เดิมไว้
-  // async function getData() {
-  //   const { data } = await axios.get(
-  //     `http://localhost:4000/posts/${id}`
-  //   );
-  //   setData(data);
-  // }
+  const user = state.user;
 
-  // useEffect(() => {
-  //   getData();
-  // }, [id]);
-
-  // Share
-
-  // Loading state
+  const { data, isLoading, error } = useFetch(
+    `${import.meta.env.VITE_API_URL}/posts/${id}`
+  );
+  const likes = data.likes_count;
   if (isLoading) {
     return (
       <section className="mx-auto px-5 mt-5">
@@ -56,6 +43,8 @@ function ViewPostPage() {
     );
   }
 
+  console.log(data.likes_count);
+
   return (
     <section className="mx-auto px-5 mt-5">
       {/* Content */}
@@ -66,29 +55,40 @@ function ViewPostPage() {
           alt={data.title}
         />
         <div className="max-w-300 mt-5">
-            <div className="flex gap-3">
-              <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2">
-                {data.category}
-              </button>
-              <span>{formatDate(data.date)}</span>
-            </div>
-            <div className="flex gap-5 items-start">
-              <div className="mt-10 flex-1">
-                <h1 className="text-4xl font-semibold">{data.title}</h1>
-                <div className="markdown">
-                  <ReactMarkdown>{data.content}</ReactMarkdown>
-                </div>
-                <p>{data.description}</p>
-                <div className="sm:hidden">
-        <PersonalCard />
-      </div>
-                <LikeShare isAuthenticated={isAuthenticated} setOpen={setOpen}/>
-                <CommentSection isAuthenticated={isAuthenticated} setOpen={setOpen}/>
+          <div className="flex gap-3">
+            <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2">
+              {data.category}
+            </button>
+            <span>{formatDate(data.date)}</span>
+          </div>
+          <div className="flex gap-5 items-start">
+            <div className="mt-10 flex-1">
+              <h1 className="text-4xl font-semibold">{data.title}</h1>
+              <div className="markdown">
+                <ReactMarkdown>{data.content}</ReactMarkdown>
               </div>
-              <div className="hidden sm:block sticky top-0 self-start w-80">
+              <p>{data.description}</p>
+              <div className="sm:hidden">
                 <PersonalCard />
               </div>
+              <LikeShare
+                isAuthenticated={isAuthenticated}
+                likes={likes}
+                user={user}
+                postId={id}
+                setOpen={setOpen}
+              />
+              <CommentSection
+                isAuthenticated={isAuthenticated}
+                setOpen={setOpen}
+                user={user}
+                postId={id}
+              />
             </div>
+            <div className="hidden sm:block sticky top-0 self-start w-80">
+              <PersonalCard />
+            </div>
+          </div>
         </div>
       </main>
       <AlertLogin open={open} setOpen={setOpen} />

@@ -26,12 +26,12 @@ function ArticleSection() {
         page: page,
         limit: 6,
         category: selectedCategory,
-        status: "publish",
+        status: 2,
       });
       try {
         const response = await axios.get(
           `${import.meta.env.VITE_API_URL}/posts?${params.toString()}`
-        );
+        );    
         setPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
         if (response.data.currentPage >= response.data.totalPages) {
           setHasMore(false); // No more posts to load

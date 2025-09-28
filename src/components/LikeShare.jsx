@@ -2,12 +2,24 @@ import { Button } from "./ui/button";
 import { CiFaceSmile } from "react-icons/ci";
 import { IoCopyOutline } from "react-icons/io5";
 import { FaFacebook, FaLinkedin, FaTwitterSquare } from "react-icons/fa";
+import axios from "axios";
+import { useState } from "react";
 
-function LikeShare({ isAuthenticated, setOpen }) {
-  const handleLike = () => {
-    if (!isAuthenticated) {
-      setOpen(true);
-      return;
+function LikeShare({ isAuthenticated, setOpen, likes, postId ,user}) {
+  const [like, setLikes] = useState(likes)
+  
+  const handleLike = async () => {
+    try {
+      if (!isAuthenticated) {
+        setOpen(true);
+        return;
+      }
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/posts/${postId}/likes`,{ user_id: user.id });
+      const status = res.data.status;
+      if (status === "liked") setLikes(likes + 1);
+      if (status === "unliked") setLikes(Math.max(likes - 1, 0));
+    } catch (error) {
+      console.log(error);
     }
   };
 
@@ -44,7 +56,7 @@ function LikeShare({ isAuthenticated, setOpen }) {
           className="w-full sm:w-auto bg-white text-black border-1 rounded-3xl hover:bg-blue-300"
         >
           <CiFaceSmile />
-          300
+          {like}
         </Button>
         <div className="w-full flex justify-between sm:justify-end items-center gap-3">
           <div>
