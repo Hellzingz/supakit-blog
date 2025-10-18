@@ -12,7 +12,7 @@ import {
 import { toast } from "sonner";
 import axios from "axios";
 
-function AdminReset() {
+function AdminPasswordReset() {
   const [oldPassword, setOldPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [confirmNewPassword, setConfirmNewPassword] = useState("");
@@ -64,7 +64,7 @@ function AdminReset() {
         </div>
         <button
           onClick={() => toast.dismiss(t)}
-          className="text-white hover:text-gray-200"
+          className="text-white hover:text-gray-200 cursor-pointer"
         >
           <X size={20} />
         </button>
@@ -77,7 +77,7 @@ function AdminReset() {
       <main className="flex-1 px-10 bg-gray-50 overflow-auto">
         <div className="flex justify-between border-b py-10 items-center mb-6">
           <h2 className="text-2xl font-semibold">Reset Password</h2>
-          <Button className="px-8 py-2 rounded-full" onClick={handleSubmit}>
+          <Button className="px-8 py-2 rounded-full cursor-pointer" onClick={handleSubmit}>
             Reset Password
           </Button>
         </div>
@@ -176,13 +176,13 @@ function ResetPasswordModal({ dialogState, setDialogState, resetFunction }) {
         <div className="flex flex-row gap-4">
           <button
             onClick={() => setDialogState(false)}
-            className="bg-background px-10 py-4 rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors"
+            className="bg-background px-10 py-4 rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
           >
             Cancel
           </button>
           <button
             onClick={resetFunction}
-            className="rounded-full text-white bg-foreground hover:bg-muted-foreground transition-colors py-4 text-lg px-10 "
+            className="rounded-full text-white bg-foreground hover:bg-muted-foreground transition-colors py-4 text-lg px-10 cursor-pointer"
           >
             Reset
           </button>
@@ -194,4 +194,4 @@ function ResetPasswordModal({ dialogState, setDialogState, resetFunction }) {
     </AlertDialog>
   );
 }
-export default AdminReset;
+export default AdminPasswordReset;

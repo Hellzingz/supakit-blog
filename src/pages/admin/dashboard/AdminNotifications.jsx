@@ -1,5 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-function AdminNotification() {
+function AdminNotifications() {
   const notifications = [
     {
       id: 1,
@@ -66,7 +66,7 @@ function AdminNotification() {
                     </p>
                   </div>
                 </div>
-                <button className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium">
+                <button className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium cursor-pointer">
                   View
                 </button>
               </div>
@@ -78,4 +78,4 @@ function AdminNotification() {
     </div>
   );
 }
-export default AdminNotification;
+export default AdminNotifications;

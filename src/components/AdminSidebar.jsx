@@ -1,12 +1,7 @@
-import {
-  Bell,
-  FileText,
-  FolderOpen,
-  Key,
-  LogOut,
-  User,
-  Globe,
-} from "lucide-react";
+import { ImProfile } from "react-icons/im";
+import { MdArticle,MdLockReset,MdCategory } from "react-icons/md";
+import { IoMdHome,IoIosNotifications  } from "react-icons/io";
+import { IoLogOut } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 
@@ -17,11 +12,11 @@ function AdminSidebar() {
   
 
   const menu = [
-    { name: "Article management", link: "/admin/articles", icon: FileText },
-    { name: "Category management", link: "/admin/category", icon: FolderOpen },
-    { name: "Profile", link: "/admin/profile", icon: User },
-    { name: "Notification", link: "/admin/notification", icon: Bell },
-    { name: "Reset password", link: "/admin/reset", icon: Key },
+    { name: "Article management", link: "/admin/articles", icon: MdArticle },
+    { name: "Category management", link: "/admin/category", icon: MdCategory },
+    { name: "Profile", link: "/admin/profile", icon: ImProfile },
+    { name: "Notification", link: "/admin/notification", icon: IoIosNotifications },
+    { name: "Reset password", link: "/admin/reset", icon: MdLockReset },
   ];
 
   return (
@@ -52,14 +47,14 @@ function AdminSidebar() {
             to="/"
             className="flex items-center p-3 text-gray-600 rounded hover:bg-gray-100"
           >
-            <Globe className="mr-3 h-5 w-5" />
+            <IoMdHome  className="mr-3 h-5 w-5" />
             Go to the website
           </Link>
           <Link
             to="/"
             className="flex items-center p-3 text-gray-600 rounded hover:bg-gray-100"
           >
-            <LogOut className="mr-3 h-5 w-5" />
+            <IoLogOut className="mr-3 h-5 w-5" />
             Log out
           </Link>
         </div>

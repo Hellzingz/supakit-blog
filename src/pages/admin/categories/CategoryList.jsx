@@ -1,6 +1,6 @@
 import { PenSquare, Trash2 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Table,
   TableBody,
@@ -13,7 +13,7 @@ import axios from "axios";
 import { useNavigate, useParams } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
 
-function AdminCategoty() {
+function CategoryList() {
   const navigate = useNavigate()
   const {id} = useParams()
 
@@ -68,4 +68,4 @@ function AdminCategoty() {
       </div>
     );
   }
-export default AdminCategoty
+export default CategoryList

@@ -1,6 +1,6 @@
 import { PenSquare, Trash2 } from "lucide-react";
-import { Button } from "../../components/ui/button";
-import { Input } from "../../components/ui/input";
+import { Button } from "../../../components/ui/button";
+import { Input } from "../../../components/ui/input";
 import {
   Select,
   SelectContent,
@@ -20,15 +20,12 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
 
-const categories = [
-  { name: "Cat" },
-  { name: "General" },
-  { name: "Inspiration" },
+const status = [
+  { id: 1, name: "Publish" },
+  { id: 2, name: "Draft" },
 ];
 
-const status = ["Publish", "Draft"];
-
-function AdminArticle() {
+function ArticleList() {
 
   const navigate = useNavigate();
 
@@ -37,8 +34,9 @@ function AdminArticle() {
     `${import.meta.env.VITE_API_URL}/posts?page=1&limit=20`
   );
 
-
-
+  const { data: categories } = useFetch(
+    `${import.meta.env.VITE_API_URL}/categories`
+  );
 
   const handleEdit = (id) => {
     navigate(`/admin/edit/${id}`);
@@ -95,9 +93,9 @@ function AdminArticle() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              {status.map((item, index) => (
-                <SelectItem key={index} value="light">
-                  {item}
+              {status.map((item) => (
+                <SelectItem key={item.id} value={item.name}>
+                  {item.name}
                 </SelectItem>
               ))}
             </SelectContent>
@@ -108,7 +106,7 @@ function AdminArticle() {
             </SelectTrigger>
             <SelectContent>
               {categories.map((category, index) => (
-                <SelectItem key={index} value="light">
+                <SelectItem key={index} value={category.id}>
                   {category.name}
                 </SelectItem>
               ))}
@@ -162,4 +160,4 @@ function AdminArticle() {
     </div>
   );
 }
-export default AdminArticle;
+export default ArticleList;

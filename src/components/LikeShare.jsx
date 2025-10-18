@@ -53,7 +53,7 @@ function LikeShare({ isAuthenticated, setOpen, likes, postId ,user}) {
       <div className="flex flex-col sm:flex-row gap-2 items-center justify-between mt-10 bg-gray-200 rounded-2xl px-5 py-3">
         <Button
           onClick={handleLike}
-          className="w-full sm:w-auto bg-white text-black border-1 rounded-3xl hover:bg-blue-300"
+          className="w-full sm:w-auto bg-white text-black border-1 rounded-3xl hover:bg-blue-300 cursor-pointer"
         >
           <CiFaceSmile />
           {like}
@@ -66,12 +66,13 @@ function LikeShare({ isAuthenticated, setOpen, likes, postId ,user}) {
             </Button>
           </div>
           <div className="flex gap-2">
-            <FaFacebook onClick={shareToFacebook} size={30} color="blue" />
-            <FaLinkedin onClick={shareToLinkedIn} size={30} color="blue" />
+            <FaFacebook onClick={shareToFacebook} size={30} color="blue" className="cursor-pointer" />
+            <FaLinkedin onClick={shareToLinkedIn} size={30} color="blue" className="cursor-pointer" />
             <FaTwitterSquare
               onClick={shareToTwitter}
               size={30}
               color="skyblue"
+              className="cursor-pointer"
             />
           </div>
         </div>

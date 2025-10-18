@@ -6,7 +6,7 @@ import axios from "axios"
 import { toastSuccess, toastError } from "@/utils/toast"
 import useFetch from "@/hooks/useFetch"
 
-function AdminCategoryEdit() {
+function CategoryEdit() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [category, setCategory] = useState({name: ''})
@@ -79,4 +79,4 @@ function AdminCategoryEdit() {
   )
 }
 
-export default AdminCategoryEdit
+export default CategoryEdit
