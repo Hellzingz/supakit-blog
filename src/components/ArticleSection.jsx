@@ -14,7 +14,6 @@ import useFetch from "@/hooks/useFetch";
 function ArticleSection() {
   const [selectedCategory, setSelectedCategory] = useState("");
   const [selectedPost, setSelectedPost] = useState(null);
-  const catagories = ["Highlight", "Cat", "Inspiration", "General"];
   const [posts, setPosts] = useState([]);
   const [page, setPage] = useState(1); // Current page state
   const [hasMore, setHasMore] = useState(true); // To track if there are more posts to load
@@ -23,6 +22,10 @@ function ArticleSection() {
 
   const { data: postTitles } = useFetch(
     `${import.meta.env.VITE_API_URL}/posts/titles?status=2`
+  );
+
+  const { data: categories } = useFetch(
+    `${import.meta.env.VITE_API_URL}/categories`
   );
 
   useEffect(() => {
@@ -74,8 +77,6 @@ function ArticleSection() {
     setPage(1);
     setHasMore(true);
   }
-  console.log(selectedPost);
-  console.log(searchKeyword);
   return (
     <section className="container py-8 lg:py-16 mx-auto">
       <h2 className="text-4xl mb-5">Latest articles</h2>
@@ -105,10 +106,11 @@ function ArticleSection() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                <SelectItem value="Highlight">Highlight</SelectItem>
-                <SelectItem value="Cat">Cat</SelectItem>
-                <SelectItem value="Inspiration">Inspiration</SelectItem>
-                <SelectItem value="General">General</SelectItem>
+                {categories?.map((category) => (
+                  <SelectItem key={category.id} value={category.id.toString()}>
+                    {category.name}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -127,20 +129,20 @@ function ArticleSection() {
           >
             All
           </button>
-          {catagories.map((catagory, index) => (
+          {categories?.map((category) => (
             <button
-              key={index}
-              value={catagory}
-              disabled={catagory === selectedCategory}
+              key={category.id}
+              value={category.id.toString()}
+              disabled={category.id.toString() === selectedCategory}
               onClick={handleCategory}
               className={`px-4 py-3 text-[#75716B] rounded-sm hover:bg-[#DAD6D1] hover:text-[#43403B]
                             ${
-                              catagory === selectedCategory
+                              category.id.toString() === selectedCategory
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                                 : "text-[#75716B] hover:bg-[#DAD6D1] hover:text-[#43403B] cursor-pointer"
                             }`}
             >
-              {catagory}
+              {category.name}
             </button>
           ))}
         </div>
@@ -160,7 +162,7 @@ function ArticleSection() {
             onClick={handleLoadMore}
             className="hover:text-muted-foreground font-medium underline cursor-pointer"
           >
-            {isLoading ? "Loading..." : "View more"}
+            {isLoading ? "Loading more..." : "View more"}
           </button>
         </div>
       )}

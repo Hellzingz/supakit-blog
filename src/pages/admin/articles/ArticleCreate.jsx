@@ -111,12 +111,12 @@ function ArticleCreate() {
 
   return (
     <div className="flex w-full mx-auto h-screen bg-gray-100">
-      <main className="flex-1 px-10 bg-gray-50 overflow-auto">
-        <div className="flex justify-between items-center border-b py-10 mb-6">
+      <main className="flex-1 px-4 md:px-10 bg-gray-50 overflow-auto">
+        <div className="flex justify-between items-center border-b py-4 md:py-10 mb-6">
           <h2 className="text-2xl font-semibold">Create article</h2>
           <div className="flex flex-col md:flex-row gap-2">
             <Button
-              className="px-8 py-2 rounded-full cursor-pointer"
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
               variant="outline"
               onClick={() => handleSave(1)}
               disabled={isLoading}
@@ -124,7 +124,7 @@ function ArticleCreate() {
               Save as draft
             </Button>
             <Button
-              className="px-8 py-2 rounded-full cursor-pointer"
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
               onClick={() => handleSave(2)}
               disabled={isLoading}
             >

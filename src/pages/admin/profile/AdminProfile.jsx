@@ -108,7 +108,7 @@ function AdminProfile() {
 
   return (
     <div className="flex w-full bg-gray-100">
-      <main className="flex-1 p-10 bg-gray-50 overflow-auto">
+      <main className="flex-1 p-4 md:p-10 bg-gray-50 overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Profile</h2>
           <Button
@@ -140,12 +140,15 @@ function AdminProfile() {
               )}
             </Avatar>
             <Button asChild>
-              <input
-                id="file-upload"
-                name="file-upload"
-                type="file"
-                onChange={handleFileChange}
-              />
+              <div className="flex items-center justify-center w-full max-w-40">
+                <input
+                  className="w-full max-w-20"
+                  id="file-upload"
+                  name="file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+              </div>
             </Button>
           </div>
 

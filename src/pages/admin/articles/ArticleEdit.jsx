@@ -123,16 +123,16 @@ function ArticleEdit() {
 
   return (
     <div className="flex w-full h-screen bg-gray-100">
-      <main className="flex-1 py-5 px-10 bg-gray-50 overflow-auto">
-        <div className="flex justify-between items-center border-b py-10 mb-6">
+      <main className="flex-1 py-5 px-4 md:px-10 bg-gray-50 overflow-auto">
+        <div className="w-full flex justify-between items-center border-b py-4 md:py-10 mb-6">
           <h2 className="text-2xl font-semibold">
             Edit article {id ? `#${id}` : ""}
           </h2>
-          <div className="space-x-2">
+          <div className="flex flex-col md:flex-row gap-2">
             <Button
               disabled={isLoading}
               onClick={() => handleSave(1)}
-              className="px-8 py-2 rounded-full cursor-pointer"
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
               variant="outline"
             >
               Save as draft
@@ -140,7 +140,7 @@ function ArticleEdit() {
             <Button
               disabled={isLoading}
               onClick={() => handleSave(2)}
-              className="px-8 py-2 rounded-full cursor-pointer"
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
             >
               Save
             </Button>
@@ -155,7 +155,7 @@ function ArticleEdit() {
             >
               Thumbnail image
             </label>
-            <div className="flex items-end space-x-4">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-2 space-x-4">
               <div className="flex justify-center items-center w-full max-w-lg h-64 px-6 py-20 border-2 border-gray-300 border-dashed rounded-md bg-gray-50">
                 <div className="text-center space-y-2">
                   {imageFile ? (

@@ -40,6 +40,17 @@ function AuthProvider(props) {
         getUserLoading: false,
       }));
     } catch (error) {
+      // ถ้า 401 (Unauthorized) ให้ลบ token และไม่แสดง error
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        setState((prevState) => ({
+          ...prevState,
+          user: null,
+          getUserLoading: false,
+        }));
+        return;
+      }
+      
       setState((prevState) => ({
         ...prevState,
         error: error.message,

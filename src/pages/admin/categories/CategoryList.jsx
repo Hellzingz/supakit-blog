@@ -31,16 +31,16 @@ function CategoryList() {
 
     return (
       <div className="w-full">
-        <div className="flex justify-between items-center p-10 mb-6 border-b">
+        <div className="flex justify-between items-center p-4 md:p-10 mb-6 border-b">
           <h2 className="text-2xl font-semibold">Category management</h2>
-          <Button className="px-8 py-2 rounded-full cursor-pointer">
+          <Button className="px-4 md:px-8 py-2 rounded-full cursor-pointer">
             + Create category
           </Button>
         </div>
-        <div className="flex px-10 justify-between">
-          <Input placeholder="Search" className="w-75" />
+        <div className="flex px-2 md:px-10 justify-between">
+          <Input placeholder="Search" className="w-full md:w-75" />
         </div>
-        <div className="p-10">
+        <div className="p-4 md:p-10">
           <Table>
             <TableHeader>
               <TableRow>

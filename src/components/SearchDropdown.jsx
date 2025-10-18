@@ -4,7 +4,7 @@ import { useState } from "react";
 
 const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, setSearchKeyword }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const filtered = data.filter((item) => item.title.toLowerCase().includes(searchKeyword.toLowerCase()));
+  const filtered = data?.filter((item) => item.title.toLowerCase().includes(searchKeyword.toLowerCase())) || [];
   const handleSelectPost = (item) => {
     setSelectedPost(item);
     setIsOpen(false);
@@ -15,7 +15,6 @@ const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, se
     setSearchKeyword(e.target.value);
     setSelectedPost(null);
   };
-console.log(selectedPost);
   return (
     <>
       <div className="relative">
@@ -27,17 +26,23 @@ console.log(selectedPost);
           value={searchKeyword || selectedPost?.title || ""}
           onChange={handleSearch}
         />
-        {isOpen && data?.length > 0 && (
+        {isOpen && (
           <div className="w-full absolute border rounded-md top-10 left-0 bg-white z-50">
-            {filtered?.map((item) => (
-              <div
-                key={item.id}
-                className="w-full px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                onClick={() => handleSelectPost(item)}
-              >
-                {item.title}
-              </div>
-            ))}
+            {!data ? (
+              <div className="w-full px-4 py-2 text-gray-500">Loading...</div>
+            ) : filtered?.length > 0 ? (
+              filtered.map((item) => (
+                <div
+                  key={item.id}
+                  className="w-full px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => handleSelectPost(item)}
+                >
+                  {item.title}
+                </div>
+              ))
+            ) : (
+              <div className="w-full px-4 py-2 text-gray-500">No posts found</div>
+            )}
           </div>
         )}
       </div>
