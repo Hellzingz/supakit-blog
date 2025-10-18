@@ -43,8 +43,6 @@ function ViewPostPage() {
     );
   }
 
-  console.log(data.likes_count);
-
   return (
     <section className="mx-auto px-5 mt-5">
       {/* Content */}
@@ -56,7 +54,7 @@ function ViewPostPage() {
         />
         <div className="max-w-300 mt-5">
           <div className="flex gap-3">
-            <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2">
+            <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2 cursor-pointer">
               {data.category}
             </button>
             <span>{formatDate(data.date)}</span>
@@ -86,7 +84,7 @@ function ViewPostPage() {
               />
             </div>
             <div className="hidden sm:block sticky top-0 self-start w-80">
-              <PersonalCard />
+              <PersonalCard data={user}/>
             </div>
           </div>
         </div>

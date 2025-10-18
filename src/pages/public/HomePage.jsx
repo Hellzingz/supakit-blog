@@ -1,7 +1,7 @@
 import { HeroSection } from "@/components/HeroSection"
 import ArticleSection from "@/components/ArticleSection"
 
-function Homepage() {
+function HomePage() {
   return (
     <>  
     <div className="container mx-auto px-5">
@@ -11,4 +11,4 @@ function Homepage() {
     </>
   )
 }
-export default Homepage
+export default HomePage

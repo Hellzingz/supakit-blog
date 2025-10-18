@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { toastSuccess } from "../utils/toast";
+import { toastError } from "../utils/toast";
+
 
 const AuthContext = React.createContext();
 
@@ -37,6 +40,17 @@ function AuthProvider(props) {
         getUserLoading: false,
       }));
     } catch (error) {
+      // ถ้า 401 (Unauthorized) ให้ลบ token และไม่แสดง error
+      if (error.response?.status === 401) {
+        localStorage.removeItem("token");
+        setState((prevState) => ({
+          ...prevState,
+          user: null,
+          getUserLoading: false,
+        }));
+        return;
+      }
+      
       setState((prevState) => ({
         ...prevState,
         error: error.message,
@@ -63,6 +77,7 @@ function AuthProvider(props) {
 
       // ดึงและตั้งค่าข้อมูลผู้ใช้
       setState((prevState) => ({ ...prevState, loading: false, error: null }));
+      toastSuccess("Login successful");
       navigate("/");
       await fetchUser();
     } catch (error) {
@@ -71,6 +86,7 @@ function AuthProvider(props) {
         loading: false,
         error: error.response?.data?.error || "Login failed",
       }));
+      toastError("Login failed");
       return { error: error.response?.data?.error || "Login failed" };
     }
   };

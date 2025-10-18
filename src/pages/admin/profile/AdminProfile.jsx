@@ -12,6 +12,7 @@ function AdminProfile() {
     name: "",
     username: "",
     email: "",
+    bio: "",
   });
   const { state } = useAuth();
   const [imageFile, setImageFile] = useState(null);
@@ -23,6 +24,7 @@ function AdminProfile() {
       name: state?.user.name,
       username: state?.user.username,
       email: state?.user.email,
+      bio: state?.user.bio,
       image: state?.user.profilePic,
     });
   }, []);
@@ -78,6 +80,7 @@ function AdminProfile() {
     formData.append("id", profile.id);
     formData.append("name", profile.name);
     formData.append("username", profile.username);
+    formData.append("bio", profile.bio);
     formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
 
     try {
@@ -101,14 +104,16 @@ function AdminProfile() {
     }
   };
 
+  console.log(profile);
+
   return (
     <div className="flex w-full bg-gray-100">
-      <main className="flex-1 p-10 bg-gray-50 overflow-auto">
+      <main className="flex-1 p-4 md:p-10 bg-gray-50 overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Profile</h2>
           <Button
             onClick={handleSave}
-            className="px-8 py-2 rounded-full"
+            className="px-8 py-2 rounded-full cursor-pointer"
             disabled={isLoading}
           >
             Save
@@ -135,12 +140,15 @@ function AdminProfile() {
               )}
             </Avatar>
             <Button asChild>
-              <input
-                id="file-upload"
-                name="file-upload"
-                type="file"
-                onChange={handleFileChange}
-              />
+              <div className="flex items-center justify-center w-full max-w-40">
+                <input
+                  className="w-full max-w-20"
+                  id="file-upload"
+                  name="file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+              </div>
             </Button>
           </div>
 
@@ -182,8 +190,7 @@ function AdminProfile() {
                 id="bio"
                 name="bio"
                 onChange={handleInputChange}
-                defaultValue="I am a pet enthusiast and freelance writer who specializes in animal behavior and care. With a deep love for cats, I enjoy sharing insights on feline companionship and wellness.
-  When I'm not writing, I spends time volunteering at my local animal shelter, helping cats find loving homes."
+                value={profile.bio || "No bio available"}
                 rows={10}
                 className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
               />

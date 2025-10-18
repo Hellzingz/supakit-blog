@@ -14,7 +14,13 @@ const useFetch = (url) => {
       setData(res.data);
     } catch (error) {
       console.error("API Error:", error);
-      setError(error);
+      // ถ้า 401 (Unauthorized) ให้ set data เป็น empty array แทน error
+      if (error.response?.status === 401) {
+        setData([]);
+        setError(null);
+      } else {
+        setError(error);
+      }
     } finally {
       setIsLoading(false);
     }

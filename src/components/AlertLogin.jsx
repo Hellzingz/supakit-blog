@@ -23,7 +23,7 @@ const AlertLogin = ({ open, setOpen }) => {
         </AlertDialogHeader>
         <Link
           to="/register"
-          className="bg-black text-white rounded-3xl py-2 w-48"
+          className="bg-black text-white rounded-3xl py-2 w-48 cursor-pointer"
         >
           Create Account
         </Link>
@@ -32,7 +32,7 @@ const AlertLogin = ({ open, setOpen }) => {
         </AlertDialogCancel>
         <p>
           Already have an account?{" "}
-          <Link to="/login" className="underline">
+          <Link to="/login" className="underline cursor-pointer">
             Log in
           </Link>
         </p>

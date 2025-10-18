@@ -1,4 +1,4 @@
-import { Trash2, ImageIcon } from "lucide-react";
+import { ImageIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toastSuccess, toastError } from "@/utils/toast";
@@ -10,36 +10,25 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useState } from "react";
 import axios from "axios";
-import useFetch from "@/hooks/useFetch";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "@/context/authContext";
 
-function AdminEdit() {
-  const { id } = useParams();
+function ArticleCreate() {
+  const {state} = useAuth()
+
+  
   const [post, setPost] = useState({
     title: "",
     description: "",
     content: "",
-    category_id: null,
-    status_id: null,
+    category_id: "",
+    status_id: "",
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-
-  // Get post data using useFetch
-  const { data: postData } = useFetch(
-    `${import.meta.env.VITE_API_URL}/posts/${id}`
-  );
-
-  // Update post state when data is fetched
-  useEffect(() => {
-    if (postData) {
-      setPost(postData);
-    }
-  }, [postData]);
-
-  console.log(post);
+  const navigate = useNavigate()
 
   // ฟังก์ชันสำหรับจัดการเมื่อมีการเลือกไฟล์
   const handleFileChange = (event) => {
@@ -79,12 +68,13 @@ function AdminEdit() {
 
   // ฟังก์ชันสำหรับการบันทึกข้อมูลโพสต์
   const handleSave = async (statusId) => {
-    // ตรวจสอบว่ามีรูปใหม่หรือรูปเดิม (ไม่นับ empty string)
-    if (!imageFile && (!post.image || post.image.trim() === "")) {
+    if (!imageFile) {
       alert("Please select an image file.");
       return;
     }
     setIsLoading(true);
+
+    
 
     // สร้าง FormData สำหรับการส่งข้อมูลแบบ multipart/form-data
     const formData = new FormData();
@@ -95,54 +85,50 @@ function AdminEdit() {
     formData.append("description", post.description);
     formData.append("content", post.content);
     formData.append("status_id", statusId);
-    // ส่งรูปใหม่ถ้ามี ถ้าไม่มีใช้รูปเดิม
-    if (imageFile) {
-      formData.append("imageFile", imageFile.file);
-    }
-    if (post.image && post.image.trim() !== "") {
-      formData.append("image", post.image); // ใช้รูปเดิมถ้ามี
-    }
-    // ถ้าไม่มีรูปเลย ไม่ต้อง append image field
+    formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
+
+    console.log(formData);
+    
 
     try {
       // ส่งข้อมูลไปยัง Backend
-      await axios.put(`${import.meta.env.VITE_API_URL}/posts/${id}`, formData, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/posts/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
         },
       });
-      toastSuccess("Edited Successfully");
+      toastSuccess("Created Successfully");
+      console.log(post);    
+      navigate('/admin')
     } catch (error) {
-      console.error("Error edited post:", error);
-      toastError("Edited Failed");
+      console.error("Error creating post:", error);
+      toastError("Create Failed");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className="flex w-full h-screen bg-gray-100">
-      <main className="flex-1 py-5 px-10 bg-gray-50 overflow-auto">
-        <div className="flex justify-between items-center border-b py-10 mb-6">
-          <h2 className="text-2xl font-semibold">
-            Edit article {id ? `#${id}` : ""}
-          </h2>
-          <div className="space-x-2">
+    <div className="flex w-full mx-auto h-screen bg-gray-100">
+      <main className="flex-1 px-4 md:px-10 bg-gray-50 overflow-auto">
+        <div className="flex justify-between items-center border-b py-4 md:py-10 mb-6">
+          <h2 className="text-2xl font-semibold">Create article</h2>
+          <div className="flex flex-col md:flex-row gap-2">
             <Button
-              disabled={isLoading}
-              onClick={() => handleSave(1)}
-              className="px-8 py-2 rounded-full"
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
               variant="outline"
+              onClick={() => handleSave(1)}
+              disabled={isLoading}
             >
               Save as draft
             </Button>
             <Button
-              disabled={isLoading}
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
               onClick={() => handleSave(2)}
-              className="px-8 py-2 rounded-full"
+              disabled={isLoading}
             >
-              Save
+              Save and publish
             </Button>
           </div>
         </div>
@@ -155,7 +141,7 @@ function AdminEdit() {
             >
               Thumbnail image
             </label>
-            <div className="flex items-end space-x-4">
+            <div className="flex flex-col md:flex-row md:items-end gap-4">
               <div className="flex justify-center items-center w-full max-w-lg h-64 px-6 py-20 border-2 border-gray-300 border-dashed rounded-md bg-gray-50">
                 <div className="text-center space-y-2">
                   {imageFile ? (
@@ -165,19 +151,18 @@ function AdminEdit() {
                       className="max-w-full max-h-48 object-contain"
                     />
                   ) : (
-                    <img src={post.image} />
+                    <ImageIcon className="mx-auto h-8 w-8 text-gray-400" />
                   )}
                 </div>
               </div>
               <label
                 htmlFor="file-upload"
-                className="px-8 py-2 bg-background rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
+                className="px-8 text-center w-auto py-2 bg-background rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
               >
                 <span>Upload thumbnail image</span>
                 <input
                   id="file-upload"
                   name="file-upload"
-                  value=""
                   type="file"
                   className="sr-only"
                   onChange={handleFileChange}
@@ -194,12 +179,12 @@ function AdminEdit() {
               }
             >
               <SelectTrigger className="max-w-lg mt-1 py-3 rounded-sm text-muted-foreground focus:ring-0 focus:ring-offset-0 focus:border-muted-foreground">
-                <SelectValue placeholder={post?.category} />
+                <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="1">Cat</SelectItem>
-                <SelectItem value="2">General</SelectItem>
-                <SelectItem value="3">Inspiration</SelectItem>
+                <SelectItem value="3">General</SelectItem>
+                <SelectItem value="2">Inspiration</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -208,7 +193,8 @@ function AdminEdit() {
             <label htmlFor="author">Author name</label>
             <Input
               id="author"
-              defaultValue="Thompson P."
+              name="author"
+              defaultValue={state.user.name}
               className="mt-1 max-w-lg"
               disabled
             />
@@ -220,20 +206,20 @@ function AdminEdit() {
               id="title"
               name="title"
               placeholder="Article title"
-              onChange={handleInputChange}
               value={post.title}
+              onChange={handleInputChange}
               className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
             />
           </div>
 
           <div>
-            <label htmlFor="introduction">Introduction (max 120 letters)</label>
+            <label htmlFor="description">Description (max 120 letters)</label>
             <Textarea
               id="description"
               name="description"
               placeholder="Description"
-              onChange={handleInputChange}
               value={post.description}
+              onChange={handleInputChange}
               rows={3}
               className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
               maxLength={120}
@@ -249,16 +235,12 @@ function AdminEdit() {
               value={post.content}
               onChange={handleInputChange}
               rows={20}
-              className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
+              className="mt-1 mb-5 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
             />
           </div>
         </form>
-        <button className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium flex items-center gap-1 mt-4">
-          <Trash2 className="h-5 w-5" />
-          Delete article
-        </button>
       </main>
     </div>
   );
 }
-export default AdminEdit;
+export default ArticleCreate;

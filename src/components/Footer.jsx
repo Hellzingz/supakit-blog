@@ -13,7 +13,7 @@ function Footer() {
             <FaFacebook size={30} color="blue" />
             <FaInstagram size={30} color="red" />
           </div>
-          <div className="flex items-center text-xl hover:underline">
+          <div className="flex items-center text-xl hover:underline cursor-pointer">
             <Link to="/">Home page</Link>
           </div>
         </div>

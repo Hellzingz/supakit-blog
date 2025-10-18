@@ -53,7 +53,7 @@ const CommentSection = ({ isAuthenticated, setOpen, user, postId }) => {
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleSend}
-              className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors"
+              className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer"
             >
               Send
             </button>

@@ -21,7 +21,7 @@ export function NavBar() {
           </Link>
         </div>
         <GiHamburgerMenu
-          className="block sm:hidden"
+          className="block sm:hidden cursor-pointer"
           size={20}
           onClick={changeToggle}
         />

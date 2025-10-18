@@ -28,7 +28,6 @@ function RegisterPage() {
         email: email,
         password: password,
       };
-      console.log(valid,data);
       register(data);
       setName("")
       setUsername("")
@@ -119,7 +118,7 @@ function RegisterPage() {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors"
+                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer"
               >
                 Sign up
               </button>

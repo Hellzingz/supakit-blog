@@ -9,7 +9,6 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState(null);
-
   const { login } = useAuth();
 
   const handleSubmit = (e) => {
@@ -19,7 +18,6 @@ function LoginPage() {
     if (Object.keys(valid).length !== 0) {
       return setError(valid)
     }
-
     const data = {
       email: email,
       password: password,
@@ -72,7 +70,7 @@ function LoginPage() {
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors"
+                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer"
               >
                 Log in
               </button>
