@@ -217,10 +217,18 @@ body {
 }
 
 /* Navbar button styles */
-.nav-button {
-  @apply px-10 py-2 text-center rounded-full border border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
+.nav-button-white {
+  @apply px-10 py-2 text-center rounded-full border bg-white text-black border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
 }
 
-.nav-button-mobile {
-  @apply px-8 py-2 text-center rounded-full border border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
+.nav-button-dark {
+  @apply px-10 py-2 text-center rounded-full border bg-black text-white border-[#75716B] cursor-pointer hover:bg-white hover:text-black;
+}
+
+.nav-button-mobile-white {
+  @apply px-8 py-2 text-center rounded-full border bg-white text-black border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
+}
+
+.nav-button-mobile-dark {
+  @apply px-8 py-2 text-center rounded-full border bg-black text-white border-[#75716B] cursor-pointer hover:bg-white hover:text-black;
 }

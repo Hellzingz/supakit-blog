@@ -1,4 +1,4 @@
-import { adminNavbarMenu } from "@/utils/data/adminNavbarMenu";
+import { adminSidebarMenu } from "@/utils/data/adminSidebarMenu";
 import { IoMdHome } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
@@ -13,7 +13,7 @@ function AdminSidebar() {
     <aside className="sm:h-full flex flex-row sm:flex-col py-4 sm:px-4 overflow-x-auto scrollbar-hide sm:pt-20">
       {/* Mobile layout - like UserSideBar (sm: and down) */}
       <nav className="flex flex-row sm:hidden gap-2 items-center">
-        {adminNavbarMenu.map((Item, index) => (
+        {adminSidebarMenu.map((Item, index) => (
           <Link
             key={index}
             to={Item.link}
@@ -57,7 +57,7 @@ function AdminSidebar() {
 
         <div className="w-full flex flex-row sm:flex-col sm:justify-between sm:h-full">
           <div className="flex flex-row sm:flex-col sm:gap-2">
-            {adminNavbarMenu.map((Item, index) => (
+            {adminSidebarMenu.map((Item, index) => (
               <Link
                 key={index}
                 to={Item.link}

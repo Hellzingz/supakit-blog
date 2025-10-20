@@ -2,13 +2,8 @@
 import { z } from "zod";
 import axios from "axios";
 
-/**
- * Name validation schema
- * - English characters only (letters, spaces, hyphens)
- * - Length between 4-20 characters
- * - Can have duplicates
- * Used in: UserProfile component
- */
+
+// Name validation schema
 export const nameSchema = z
   .string()
   .min(1, "Name is required")
@@ -16,13 +11,8 @@ export const nameSchema = z
   .max(20, "Name must be no more than 20 characters")
   .regex(/^[a-zA-Z\s-]+$/, "Name must contain only English letters, spaces, and hyphens");
 
-/**
- * Username validation schema
- * - English characters and numbers only
- * - Length between 4-15 characters
- * - No duplicates allowed
- * Used in: UserProfile component, RegisterPage
- */
+
+// Username validation schema
 export const usernameSchema = z
   .string()
   .min(1, "Username is required")
@@ -30,23 +20,14 @@ export const usernameSchema = z
   .max(15, "Username must be no more than 15 characters")
   .regex(/^[a-zA-Z0-9]+$/, "Username must contain only letters and numbers");
 
-/**
- * Email validation schema
- * - Standard email format validation
- * - No duplicates allowed
- * Used in: UserProfile component, RegisterPage, LoginPage
- */
+
+// Email validation schema
 export const emailSchema = z
   .string()
   .min(1, "Email is required")
   .email("Invalid email format");
 
-/**
- * Password validation schema
- * - Length between 8-20 characters
- * - At least one letter and one number
- * Used in: ResetPassword component, RegisterPage, LoginPage
- */
+// Password validation schema
 export const passwordSchema = z
   .string()
   .min(1, "Password is required")
@@ -54,30 +35,30 @@ export const passwordSchema = z
   .max(20, "Password must be no more than 20 characters")
   .regex(/^(?=.*[a-zA-Z])(?=.*\d).+$/, "Password must contain at least one letter and one number");
 
-/**
- * Password confirmation validation schema
- * - Must match the original password
- * Used in: ResetPassword component, RegisterPage
- */
+// Password confirmation validation schema
 export const passwordConfirmSchema = (password) => z
   .string()
   .min(1, "Please confirm your password")
   .refine((val) => val === password, "Passwords do not match");
 
-/**
- * User profile validation schema
- * Used in: UserProfile component
- */
+
+// User profile validation schema
 export const userProfileSchema = z.object({
   name: nameSchema,
   username: usernameSchema,
   email: emailSchema,
 });
 
-/**
- * Reset password validation schema
- * Used in: ResetPassword component
- */
+
+// Register validation schema
+export const registerSchema = z.object({
+  name: nameSchema,
+  username: usernameSchema,
+  email: emailSchema,
+  password: passwordSchema,
+});
+
+//  Reset password validation schema
 export const resetPasswordSchema = z.object({
   oldPassword: z.string().min(1, "Current password is required"),
   newPassword: passwordSchema,
@@ -90,10 +71,7 @@ export const resetPasswordSchema = z.object({
   path: ["newPassword"],
 });
 
-/**
- * Validate data using Zod schema
- * Returns { isValid: boolean, errors: object, data: object }
- */
+// Validate data using Zod schema
 export const validateData = (schema, data) => {
   try {
     const validatedData = schema.parse(data);
@@ -111,10 +89,7 @@ export const validateData = (schema, data) => {
   }
 };
 
-/**
- * Check if username is available (for duplicate checking)
- * Used in: UserProfile component, RegisterPage
- */
+// Check if username is available (for duplicate checking)
 export const checkUsernameAvailability = async (username, currentUserId = null) => {
   try {
     const response = await axios.get(
@@ -126,10 +101,7 @@ export const checkUsernameAvailability = async (username, currentUserId = null) 
   }
 };
 
-/**
- * Check if email is available (for duplicate checking)
- * Used in: UserProfile component, RegisterPage
- */
+// Check if email is available (for duplicate checking)
 export const checkEmailAvailability = async (email, currentUserId = null) => {
   try {
     const response = await axios.get(
