@@ -1,4 +1,4 @@
-const NotificationBell = ({width, height}) => {
+const Bell = ({width, height}) => {
   return (
     <svg
       width={width}
@@ -19,4 +19,4 @@ const NotificationBell = ({width, height}) => {
     </svg>
   );
 };
-export default NotificationBell;
+export default Bell;

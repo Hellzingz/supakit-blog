@@ -2,48 +2,81 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import useFetch from "@/hooks/useFetch";
 import { useAuth } from "@/context/authContext";
 import { timeSpace } from "@/utils/timeSpace";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 function AdminNotifications() {
   const { state } = useAuth();
-  const { data } = useFetch(`${import.meta.env.VITE_API_URL}/notifications/${state.user.id}`);
-  console.log(data);
+  const navigate = useNavigate();
+  const { data, isLoading } = useFetch(
+    `${import.meta.env.VITE_API_URL}/notifications/${state.user.id}/`
+  );
+
+  const handleRead = (notifications) => {
+    try {
+      navigate(`/post/${notifications.target_id}`);
+      axios.put(
+        `${import.meta.env.VITE_API_URL}/notifications/${
+          notifications.id
+        }/read`,
+        {
+          is_read: true,
+        }
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex w-full bg-gray-100">
-      <main className="flex-1 px-4 md:px-10 bg-gray-50 overflow-auto">
+      <main className="flex-1 px-4 md:px-10 bg-white overflow-auto">
         <div className="flex justify-between items-center border-b py-4 md:py-10 mb-6">
           <h2 className="text-2xl font-semibold">Notification</h2>
         </div>
-
-        <div className="flex flex-col gap-4">
-          {data?.map((notification) => (
-            <div key={notification.id}>
-              <div className="p-0 md:p-4 rounded-lg flex flex-col md:flex-row items-start md:justify-between">
-                <div className="flex items-start space-x-4">
-                  <Avatar className="w-10 h-10">
-                    <AvatarImage
-                      src={notification.actor.profile_pic}
-                      // alt={notification.actor_name}
-                    />
-                    <AvatarFallback>
-                      {notification.actor.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                  <div>
-                    <div>{notification.actor.name} <span className="text-gray-500">{notification.message}</span></div>
-                    <div>{timeSpace(notification.created_at)}</div>
+        {isLoading ? (
+          <div className="flex justify-center items-center h-64">
+            <div className="text-lg">Loading...</div>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            {data?.map((notification) => (
+              <div
+                key={notification.id}
+                onClick={() => handleRead(notification)}
+              >
+                <div className="p-0 md:p-4 rounded-lg flex flex-col md:flex-row items-start md:justify-between">
+                  <div className="flex items-start space-x-4">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage
+                        src={notification.actor.profile_pic}
+                        // alt={notification.actor_name}
+                      />
+                      <AvatarFallback>
+                        {notification.actor.name.charAt(0)}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <div>
+                        {notification.actor.name}{" "}
+                        <span className="text-gray-500">
+                          {notification.message}
+                        </span>
+                      </div>
+                      <div>{timeSpace(notification.created_at)}</div>
+                    </div>
+                  </div>
+                  <div className="w-full text-center md:text-right">
+                    <button className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium cursor-pointer">
+                      View
+                    </button>
                   </div>
                 </div>
-                <div className="w-full text-center md:text-right">
-                  <button className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium cursor-pointer">
-                    View
-                  </button>
-                </div>
+                <hr className="border-gray-200 my-4" />
               </div>
-              <hr className="border-gray-200 my-4" />
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </main>
     </div>
   );
