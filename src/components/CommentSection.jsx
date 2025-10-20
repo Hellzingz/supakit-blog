@@ -4,30 +4,40 @@ import { useState } from "react";
 import useFetch from "@/hooks/useFetch";
 import { formatDate } from "@/utils/date";
 
-const CommentSection = ({ isAuthenticated, setOpen, user, postId }) => {
+const CommentSection = ({ isAuthenticated, setOpen, user, postData }) => {
   const { data } = useFetch(
-    `${import.meta.env.VITE_API_URL}/posts/${postId}/comments`
+    `${import.meta.env.VITE_API_URL}/posts/${postData.id}/comments`
   );
+
   const comments = data.comments;
 
   const [comment, setComment] = useState("");
-  const handleSend = async (e) => {
-    e.preventDefault();
+  const handleSend = async () => {
     try {
       if (!isAuthenticated) {
         setOpen(true);
         return;
       }
       const data = {
-        post_id: postId,
+        post_id: postData.id,
         user_id: user?.id,
         comment_text: comment,
       };
-      const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/posts/${postId}/comments`,
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/posts/${postData.id}/comments`,
         data
       );
-      console.log(res);
+      const notificationType = "commented";
+      const message = `${notificationType} on your article: ${postData?.title}`;   
+      await axios.post(`${import.meta.env.VITE_API_URL}/notifications`, {
+        type: notificationType,
+        target_type: "post",
+        recipient_id: postData?.user?.id,
+        actor_id: user?.id,
+        target_id: postData.id,
+        comment_text: comment,
+        message: message,
+      });
       setComment("");
     } catch (error) {
       console.log(error);
@@ -72,7 +82,9 @@ const CommentSection = ({ isAuthenticated, setOpen, user, postId }) => {
               <div>
                 <div className="flex flex-col items-start justify-between">
                   <h4 className="font-semibold">{comment.name}</h4>
-                  <span className="text-sm text-gray-500">{formatDate(comment.date)}</span>
+                  <span className="text-sm text-gray-500">
+                    {formatDate(comment.date)}
+                  </span>
                 </div>
               </div>
             </div>

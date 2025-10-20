@@ -14,6 +14,8 @@ import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";
 import ViewPostPage from "./pages/public/ViewPostPage";
 import RegisterSuccess from "./pages/public/RegisterSuccess";
+import UserProfile from "./pages/member/UserProfile";
+import UserPasswordReset from "./pages/member/UserPasswordReset";
 
 //Admin Pages
 import AdminLayout from "./layouts/AdminLayout";
@@ -41,15 +43,16 @@ function App() {
 
         {/* Member Routes */}
 
-        <Route element={<UserLayout />}>
-          <Route
-            path="/user"
-            element={
-              <AuthenticationRoute>
-                <MemberPage />
-              </AuthenticationRoute>
-            }
-          />
+        <Route
+          path="/user"
+          element={
+            <ProtectedRoute>
+              <UserLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route path="profile" element={<UserProfile />} />
+          <Route path="reset" element={<UserPasswordReset />} />
         </Route>
 
         {/* ADMIN Route */}

@@ -205,3 +205,22 @@ body {
   margin: 2em 0;
   border-radius: 12px;
 }
+
+/* Custom scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Navbar button styles */
+.nav-button {
+  @apply px-10 py-2 text-center rounded-full border border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
+}
+
+.nav-button-mobile {
+  @apply px-8 py-2 text-center rounded-full border border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
+}

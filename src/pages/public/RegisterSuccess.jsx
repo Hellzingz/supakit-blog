@@ -1,5 +1,5 @@
 import { NavBar } from "@/components/NavBar";
-import { DoneRight } from "@/assets/img/doneRight";
+import { DoneRight } from "@/components/icons/DoneRight";
 import { useNavigate } from "react-router-dom";
 
 const RegisterSuccess = () => {

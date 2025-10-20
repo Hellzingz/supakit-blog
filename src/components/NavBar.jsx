@@ -3,61 +3,71 @@ import Logo from "../assets/img/logo.png";
 import { useToggle } from "../hooks/useToggle";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Link } from "react-router-dom";
+import NavbarProfile from "./NavbarProfile";
+import NavbarDropdown from "./NavbarDropdown";
 import { useAuth } from "@/context/authContext";
-import NavDropdown from "./NavDropdown";
 
 export function NavBar() {
   const { toggle, changeToggle } = useToggle(false);
-  const { isAuthenticated } = useAuth();
-
-
+  const { state } = useAuth();
+  const isAuthenticated = Boolean(state?.user);
 
   return (
-    <div className="bg-[#F9F8F6]">
-      <nav className="container mx-auto w-full h-[80px] flex items-center justify-between px-5 py-10">
-        <div>
-          <Link to="/">
-            <img src={Logo} alt="" />
-          </Link>
-        </div>
-        <GiHamburgerMenu
-          className="block sm:hidden cursor-pointer"
-          size={20}
-          onClick={changeToggle}
-        />
-
-        <div className="hidden sm:flex space-x-4">
-          {isAuthenticated ? (
-            <NavDropdown />
-          ) : (
-            <>
-              <Link
-                to="/login"
-                className="px-8 py-2 rounded-full border border-[##75716B] cursor-pointer hover:bg-black hover:text-white"
-              >
-                Login
-              </Link>
-              <Link
-                to="/register"
-                className="px-8 py-2 rounded-full border border-[##75716B] cursor-pointer hover:bg-black hover:text-white"
-              >
-                Sign up
-              </Link>
-            </>
-          )}
+    <div className="w-full bg-white sm:border-b border-gray-200 py-4 sm:px-10 md:px-20">
+      <nav className="w-full flex flex-col sm:flex-row items-center justify-between px-5">
+        <div className="w-full flex items-center justify-between">
+          <div className="w-full border-b border-gray-200 sm:border-none">
+            <Link to="/">
+              <img src={Logo} alt="" />
+            </Link>
+          </div>
+          <div className="flex-1 hidden sm:flex items-center justify-end gap-2 cursor-pointer">
+            {isAuthenticated ? (
+              <div onClick={changeToggle} className="cursor-pointer">
+              <NavbarProfile />
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 px-6">
+                <Link
+                  to="/login"
+                  className="nav-button"
+                >
+                  Login
+                </Link>
+                <Link
+                  to="/register"
+                  className="nav-button whitespace-nowrap"
+                >
+                  Sign up
+                </Link>
+              </div>
+            )}
+          </div>
+          <div
+            className="block sm:hidden cursor-pointer"
+            onClick={changeToggle}
+          >
+            <GiHamburgerMenu />
+          </div>
         </div>
       </nav>
+
       {toggle && (
-        <div className="flex flex-col sm:hidden items-center w-full gap-5 shadow-xl py-10">
+        <div className="w-full bg-white sm:absolute sm:max-w-[210px] sm:border sm:border-gray-200 sm:shadow-md sm:rounded-md sm:top-18 sm:right-30">
+          <NavbarDropdown isAuthenticated={isAuthenticated} state={state} />
+        </div>
+      )}
+      {toggle && !isAuthenticated && (
+        <div className="flex sm:hidden flex-col gap-4 px-6 py-10">
           <Link
             to="/login"
-            className=" w-full text-center py-2 rounded-full border border-[##75716B] hover:bg-black hover:text-white"
+            className="nav-button-mobile"
           >
             Login
           </Link>
           <Link
             to="/register"
-            className=" w-full text-center py-2 rounded-full border border-[##75716B] hover:bg-black hover:text-white"
+            className="nav-button-mobile"
           >
             Sign up
           </Link>

@@ -5,6 +5,7 @@ import { Avatar } from "@/components/ui/avatar";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/authContext";
 import { toastSuccess, toastError } from "@/utils/toast";
+import { userProfileSchema, validateData } from "@/utils/validate";
 import axios from "axios";
 function AdminProfile() {
   const [profile, setProfile] = useState({
@@ -17,6 +18,7 @@ function AdminProfile() {
   const { state } = useAuth();
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     setProfile({
@@ -63,41 +65,75 @@ function AdminProfile() {
       ...prevData,
       [name]: value,
     }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
   };
 
   // ฟังก์ชันสำหรับการบันทึกข้อมูลโพสต์
   const handleSave = async () => {
-    if (!imageFile) {
-      alert("Please select an image file.");
+    // Validate form data
+    const validation = validateData(userProfileSchema, {
+      name: profile.name,
+      username: profile.username,
+      email: profile.email,
+    });
+    
+    if (!validation.isValid) {
+      setErrors(validation.errors);
       return;
     }
+
     setIsLoading(true);
 
-    // สร้าง FormData สำหรับการส่งข้อมูลแบบ multipart/form-data
-    const formData = new FormData();
-
-    // เพิ่มข้อมูลทั้งหมดลงใน FormData
-    formData.append("id", profile.id);
-    formData.append("name", profile.name);
-    formData.append("username", profile.username);
-    formData.append("bio", profile.bio);
-    formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
-
     try {
-      // ส่งข้อมูลไปยัง Backend
-      await axios.put(
-        `${import.meta.env.VITE_API_URL}/auth/update-profile`,
-        formData,
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-            Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
+      // ถ้ามีไฟล์ใหม่ ใช้ FormData
+      if (imageFile?.file) {
+        const formData = new FormData();
+        formData.append("id", profile.id);
+        formData.append("name", profile.name);
+        formData.append("username", profile.username);
+        formData.append("bio", profile.bio);
+        formData.append("imageFile", imageFile.file);
+
+        await axios.put(
+          `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      } else {
+        // ถ้าไม่มีไฟล์ใหม่ ส่งแค่ JSON
+        await axios.put(
+          `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+          {
+            id: profile.id,
+            name: profile.name,
+            username: profile.username,
+            bio: profile.bio,
           },
-        }
-      );
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      }
+      
       toastSuccess("Updated Successfully");
+      setImageFile(null);
     } catch (error) {
-      console.error("Error creating post:", error);
+      console.error("Error updating profile:", error);
       toastError("Update Failed");
     } finally {
       setIsLoading(false);
@@ -108,7 +144,7 @@ function AdminProfile() {
 
   return (
     <div className="flex w-full bg-gray-100">
-      <main className="flex-1 p-4 md:p-10 bg-gray-50 overflow-auto">
+      <main className="flex-1 p-4 md:p-10 bg-white overflow-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-semibold">Profile</h2>
           <Button
@@ -160,8 +196,10 @@ function AdminProfile() {
                 id="name"
                 name="name"
                 onChange={handleInputChange}
-                className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${errors.name ? 'border-red-500' : ''}`}
+                placeholder="Enter your name (4-20 characters, English only)"
               />
+              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
             </div>
             <div>
               <label htmlFor="username">Username</label>
@@ -170,8 +208,10 @@ function AdminProfile() {
                 name="username"
                 onChange={handleInputChange}
                 value={profile.username}
-                className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
+                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${errors.username ? 'border-red-500' : ''}`}
+                placeholder="Enter username (4-15 characters, letters and numbers only)"
               />
+              {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
             </div>
             <div>
               <label htmlFor="email">Email</label>

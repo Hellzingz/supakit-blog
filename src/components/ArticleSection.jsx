@@ -78,10 +78,10 @@ function ArticleSection() {
     setHasMore(true);
   }
   return (
-    <section className="container py-8 lg:py-16 mx-auto">
+    <section className="py-8 lg:py-16">
       <h2 className="text-4xl mb-5">Latest articles</h2>
-      <div className="bg-[#EFEEEB] px-4 py-4 flex flex-col gap-4 md:flex-row-reverse md:items-center md:justify-between rounded-xl">
-        <div className="w-full md:w-1/3">
+      <div className="bg-[#EFEEEB] px-4 py-4 flex flex-col gap-4 sm:flex-row-reverse sm:items-center sm:justify-between rounded-xl">
+        <div className="w-full sm:w-1/3">
           <SearchDropdown
             data={postTitles}
             selectedPost={selectedPost}
@@ -89,7 +89,7 @@ function ArticleSection() {
             searchKeyword={searchKeyword}
             setSearchKeyword={setSearchKeyword}
           />
-          <div className="md:hidden w-full">
+          <div className="sm:hidden w-full">
             <h2 className="mt-2 text-[#75716B]">Category</h2>
             <Select
               value={selectedCategory === "" ? "all" : selectedCategory}
@@ -115,12 +115,12 @@ function ArticleSection() {
             </Select>
           </div>
         </div>
-        <div className="hidden md:flex md:space-x-2">
+        <div className="hidden sm:flex sm:space-x-2">
           <button
             value="all"
             disabled={selectedCategory === ""}
             onClick={handleCategory}
-            className={`px-4 py-3 text-[#75716B] rounded-sm hover:bg-[#DAD6D1] hover:text-[#43403B]
+            className={`min-w-[80px] px-4 py-3 text-[#75716B] rounded-sm hover:bg-[#DAD6D1] hover:text-[#43403B]
                           ${
                             selectedCategory === ""
                               ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -135,7 +135,7 @@ function ArticleSection() {
               value={category.id.toString()}
               disabled={category.id.toString() === selectedCategory}
               onClick={handleCategory}
-              className={`px-4 py-3 text-[#75716B] rounded-sm hover:bg-[#DAD6D1] hover:text-[#43403B]
+              className={`min-w-[100px] px-4 py-3 text-[#75716B] rounded-sm hover:bg-[#DAD6D1] hover:text-[#43403B]
                             ${
                               category.id.toString() === selectedCategory
                                 ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -147,7 +147,7 @@ function ArticleSection() {
           ))}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 mt-10 gap-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 mt-10 gap-10">
         {posts.length > 0 &&
           posts.map((post, index) => (
             <BlogCard key={index} post={post} isLoading={isLoading} />
