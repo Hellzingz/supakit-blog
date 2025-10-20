@@ -28,13 +28,13 @@ export function NavBar() {
               <div className="flex items-center gap-4 px-6">
                 <Link
                   to="/login"
-                  className="nav-button"
+                  className="nav-button-white"
                 >
                   Login
                 </Link>
                 <Link
                   to="/register"
-                  className="nav-button whitespace-nowrap"
+                  className="nav-button-dark whitespace-nowrap"
                 >
                   Sign up
                 </Link>
@@ -59,13 +59,13 @@ export function NavBar() {
         <div className="flex sm:hidden flex-col gap-4 px-6 py-10">
           <Link
             to="/login"
-            className="nav-button-mobile"
+            className="nav-button-mobile-white"
           >
             Login
           </Link>
           <Link
             to="/register"
-            className="nav-button-mobile"
+            className="nav-button-mobile-dark"
           >
             Sign up
           </Link>

@@ -14,7 +14,7 @@ const NavbarDropdown = ({ isAuthenticated, state }) => {
     logout();
     navigate("/");
   };
-  const menu =
+  const NavbarMenu =
     role === "admin"
       ? [
           { icon: <UserAvartar />, label: "Profile", link: "/user/profile" },
@@ -42,7 +42,7 @@ const NavbarDropdown = ({ isAuthenticated, state }) => {
               <NavbarProfile />
             </div>
             <div className="flex flex-col gap-2 border-gray-200 border-b py-4">
-              {menu.map((item) => (
+              {NavbarMenu.map((item) => (
                 <Link
                   key={item.label}
                   className="flex items-center gap-4 py-2 px-4 hover:bg-gray-100 cursor-pointer"
