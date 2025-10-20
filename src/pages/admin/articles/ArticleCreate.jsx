@@ -85,6 +85,7 @@ function ArticleCreate() {
     formData.append("description", post.description);
     formData.append("content", post.content);
     formData.append("status_id", statusId);
+    // formData.append("user_id", state.user.id);
     formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
 
     try {

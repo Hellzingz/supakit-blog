@@ -17,20 +17,20 @@ const NavbarDropdown = ({ isAuthenticated, state }) => {
   const menu =
     role === "admin"
       ? [
-          { icon: <UserAvartar />, label: "Profile", link: "user/profile" },
+          { icon: <UserAvartar />, label: "Profile", link: "/user/profile" },
           {
             icon: <RefreshPass />,
             label: "Reset Password",
-            link: "user/reset",
+            link: "/user/reset",
           },
           { icon: <AdminManage />, label: "Admin panel", link: "/admin" },
         ]
       : [
-          { icon: <UserAvartar />, label: "Profile", link: "user/profile" },
+          { icon: <UserAvartar />, label: "Profile", link: "/user/profile" },
           {
             icon: <RefreshPass />,
             label: "Reset Password",
-            link: "user/reset",
+            link: "/user/reset",
           },
         ];
   return (

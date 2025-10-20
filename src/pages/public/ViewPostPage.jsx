@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
+
 import ReactMarkdown from "react-markdown";
 import AlertLogin from "@/components/AlertLogin";
 import { formatDate } from "@/utils/date";

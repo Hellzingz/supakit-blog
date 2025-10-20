@@ -21,11 +21,9 @@ export function NavBar() {
               <img src={Logo} alt="" />
             </Link>
           </div>
-          <div className="flex-1 hidden sm:flex items-center justify-end gap-2 cursor-pointer">
+          <div className="flex-1 hidden sm:flex items-center justify-end gap-2">
             {isAuthenticated ? (
-              <div onClick={changeToggle} className="cursor-pointer">
-              <NavbarProfile />
-              </div>
+              <NavbarProfile openMenu={changeToggle}/>
             ) : (
               <div className="flex items-center gap-4 px-6">
                 <Link
