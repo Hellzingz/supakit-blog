@@ -12,7 +12,6 @@ import { useState } from "react";
 import { useAuth } from "@/context/authContext";
 
 function ViewPostPage() {
-  // const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const { isAuthenticated, state } = useAuth();
   const { id } = useParams();
@@ -31,7 +30,6 @@ function ViewPostPage() {
       </section>
     );
   }
-
   // Error state
   if (error) {
     return (
@@ -67,12 +65,13 @@ function ViewPostPage() {
               </div>
               <p>{data.description}</p>
               <div className="sm:hidden">
-                <PersonalCard />
+                <PersonalCard data={data}/>
               </div>
               <LikeShare
                 isAuthenticated={isAuthenticated}
                 likes={likes}
                 user={user}
+                data={data}
                 postId={id}
                 setOpen={setOpen}
               />
@@ -80,11 +79,11 @@ function ViewPostPage() {
                 isAuthenticated={isAuthenticated}
                 setOpen={setOpen}
                 user={user}
-                postId={id}
+                postData={data}
               />
             </div>
             <div className="hidden sm:block sticky top-0 self-start w-80">
-              <PersonalCard data={user}/>
+              <PersonalCard data={data}/>
             </div>
           </div>
         </div>

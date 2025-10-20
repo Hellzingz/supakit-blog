@@ -1,77 +1,90 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useState } from "react";
-import { X } from "lucide-react";
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogCancel,
-} from "@/components/ui/alert-dialog";
 import { toast } from "sonner";
+import { resetPasswordSchema, validateData } from "@/utils/validate";
+import ResetPasswordModal from "@/components/ui/ResetPasswordModal";
 import axios from "axios";
 
 function AdminPasswordReset() {
-  const [oldPassword, setOldPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [confirmNewPassword, setConfirmNewPassword] = useState("");
-  const [valid, setValid] = useState({
-    oldPassword: true,
-    newPassword: true,
-    confirmNewPassword: true,
+  const [formData, setFormData] = useState({
+    oldPassword: "",
+    newPassword: "",
+    confirmNewPassword: ""
   });
+  const [errors, setErrors] = useState({});
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({
+        ...prev,
+        [name]: ""
+      }));
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const isValidPassword = oldPassword.trim() !== "";
-    const isValidNewPassword = newPassword.trim() !== "";
-    const isValidConfirmPassword =
-      confirmNewPassword.trim() !== "" && confirmNewPassword === newPassword;
-
-    setValid({
-      oldPassword: isValidPassword,
-      newPassword: isValidNewPassword,
-      confirmNewPassword: isValidConfirmPassword,
-    });
-
-    if (isValidPassword && isValidNewPassword && isValidConfirmPassword) {
-      setIsDialogOpen(true);
+    
+    // Validate using Zod schema
+    const validation = validateData(resetPasswordSchema, formData);
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return;
     }
+    
+    setIsDialogOpen(true);
+  };
+
+  const handleResetPassword = async () => {
     try {
+      setIsSubmitting(true);
       await axios.put(`${import.meta.env.VITE_API_URL}/auth/reset-password`, {
-        oldPassword,
-        newPassword,
+        oldPassword: formData.oldPassword,
+        newPassword: formData.newPassword,
       });
-      setOldPassword("");
-      setNewPassword("");
-      setConfirmNewPassword("");
+      
+      setFormData({
+        oldPassword: "",
+        newPassword: "",
+        confirmNewPassword: ""
+      });
+      
+      toast.custom((t) => (
+        <div className="bg-green-500 text-white p-4 rounded-sm flex justify-between items-start">
+          <div>
+            <h2 className="font-bold text-lg mb-1">Reset!</h2>
+            <p className="text-sm">
+              Password reset successful. You can now log in with your new
+              password.
+            </p>
+          </div>
+          <button
+            onClick={() => toast.dismiss(t)}
+            className="text-white hover:text-gray-200 cursor-pointer"
+          >
+            <X size={20} />
+          </button>
+        </div>
+      ));
+      setIsDialogOpen(false);
     } catch (err) {
       console.log(err);
+      toast.error("Failed to reset password");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
-  const handleResetPassword = () => {
-    toast.custom((t) => (
-      <div className="bg-green-500 text-white p-4 rounded-sm flex justify-between items-start">
-        <div>
-          <h2 className="font-bold text-lg mb-1">Reset!</h2>
-          <p className="text-sm">
-            Password reset successful. You can now log in with your new
-            password.
-          </p>
-        </div>
-        <button
-          onClick={() => toast.dismiss(t)}
-          className="text-white hover:text-gray-200 cursor-pointer"
-        >
-          <X size={20} />
-        </button>
-      </div>
-    ));
-    setIsDialogOpen(false);
-  };
   return (
     <div className="flex w-full bg-gray-100">
       <main className="flex-1 px-4 md:px-10 bg-gray-50 overflow-auto">
@@ -82,116 +95,88 @@ function AdminPasswordReset() {
           </Button>
         </div>
 
-        <div className="space-y-7 max-w-md my-10">
+        <form onSubmit={handleSubmit} className="space-y-7 max-w-md my-10">
           <div className="relative">
             <label
-              htmlFor="current-password"
+              htmlFor="oldPassword"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Current password
             </label>
             <Input
-              id="current-password"
+              id="oldPassword"
+              name="oldPassword"
               type="password"
               placeholder="Current password"
-              value={oldPassword}
-              onChange={(e) => setOldPassword(e.target.value)}
+              value={formData.oldPassword}
+              onChange={handleInputChange}
               className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                !valid.password && oldPassword.trim() ? "border-red-500" : ""
+                errors.oldPassword ? "border-red-500" : ""
               }`}
             />
-            {!valid.oldPassword && (
+            {errors.oldPassword && (
               <p className="text-red-500 text-xs absolute mt-1">
-                Corrent Password is required
+                {errors.oldPassword}
               </p>
             )}
           </div>
           <div className="relative">
             <label
-              htmlFor="new-password"
+              htmlFor="newPassword"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               New password
             </label>
             <Input
-              id="new-password"
+              id="newPassword"
+              name="newPassword"
               type="password"
-              placeholder="New password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="New password (8-20 characters, letters and numbers)"
+              value={formData.newPassword}
+              onChange={handleInputChange}
               className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                !valid.newPassword ? "border-red-500" : ""
+                errors.newPassword ? "border-red-500" : ""
               }`}
             />
-            {!valid.newPassword && (
+            {errors.newPassword && (
               <p className="text-red-500 text-xs absolute mt-1">
-                Password must be at least 8 characters
+                {errors.newPassword}
               </p>
             )}
           </div>
           <div className="relative">
             <label
-              htmlFor="confirm-new-password"
+              htmlFor="confirmNewPassword"
               className="block text-sm font-medium text-gray-700 mb-1"
             >
               Confirm new password
             </label>
             <Input
-              id="confirm-new-password"
+              id="confirmNewPassword"
+              name="confirmNewPassword"
               type="password"
               placeholder="Confirm new password"
-              value={confirmNewPassword}
-              onChange={(e) => setConfirmNewPassword(e.target.value)}
+              value={formData.confirmNewPassword}
+              onChange={handleInputChange}
               className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
-                !valid.confirmNewPassword ? "border-red-500" : ""
+                errors.confirmNewPassword ? "border-red-500" : ""
               }`}
             />
-            {!valid.confirmNewPassword && (
+            {errors.confirmNewPassword && (
               <p className="text-red-500 text-xs absolute mt-1">
-                Passwords do not match
+                {errors.confirmNewPassword}
               </p>
             )}
           </div>
-        </div>
+        </form>
       </main>
       <ResetPasswordModal
         dialogState={isDialogOpen}
         setDialogState={setIsDialogOpen}
         resetFunction={handleResetPassword}
+        isSubmitting={isSubmitting}
       />
     </div>
-  );
-}
-
-function ResetPasswordModal({ dialogState, setDialogState, resetFunction }) {
-  return (
-    <AlertDialog open={dialogState} onOpenChange={setDialogState}>
-      <AlertDialogContent className="bg-white rounded-md pt-16 pb-6 max-w-[22rem] sm:max-w-md flex flex-col items-center">
-        <AlertDialogTitle className="text-3xl font-semibold pb-2 text-center">
-          Reset password
-        </AlertDialogTitle>
-        <AlertDialogDescription className="flex flex-row mb-2 justify-center font-medium text-center text-muted-foreground">
-          Do you want to reset your password?
-        </AlertDialogDescription>
-        <div className="flex flex-row gap-4">
-          <button
-            onClick={() => setDialogState(false)}
-            className="bg-background px-10 py-4 rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={resetFunction}
-            className="rounded-full text-white bg-foreground hover:bg-muted-foreground transition-colors py-4 text-lg px-10 cursor-pointer"
-          >
-            Reset
-          </button>
-        </div>
-        <AlertDialogCancel className="absolute right-4 top-2 sm:top-4 p-1 border-none">
-          <X className="h-6 w-6" />
-        </AlertDialogCancel>
-      </AlertDialogContent>
-    </AlertDialog>
   );
 }
 export default AdminPasswordReset;

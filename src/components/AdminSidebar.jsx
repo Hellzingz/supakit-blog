@@ -1,6 +1,5 @@
-import { ImProfile } from "react-icons/im";
-import { MdArticle, MdLockReset, MdCategory } from "react-icons/md";
-import { IoMdHome, IoIosNotifications } from "react-icons/io";
+import { adminNavbarMenu } from "@/utils/data/adminNavbarMenu";
+import { IoMdHome } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
@@ -9,62 +8,89 @@ function AdminSidebar() {
   const location = useLocation();
   const { state } = useAuth();
 
-  const menu = [
-    { name: "Article management", link: "/admin/articles", icon: MdArticle },
-    { name: "Category management", link: "/admin/category", icon: MdCategory },
-    { name: "Profile", link: "/admin/profile", icon: ImProfile },
-    {
-      name: "Notification",
-      link: "/admin/notification",
-      icon: IoIosNotifications,
-    },
-    { name: "Reset password", link: "/admin/reset", icon: MdLockReset },
-  ];
 
   return (
-    <div className="flex flex-row md:flex-col py-0 md:py-4 overflow-hidden">
-      <div className="hidden md:block text-center mb-6">
-        <h1 className="text-2xl font-bold">
-          {state.user.username}
-          <span className="text-green-400">.</span>
-        </h1>
-        <p className="text-sm text-orange-400">Admin panel</p>
-      </div>
-      <div className="flex flex-row md:flex-col justify-between">
-        <nav className="flex flex-row md:flex-col gap-0 md:gap-2 md:px-0">
-          {menu.map((Item, index) => (
-            <Link
-              key={index}
-              to={Item.link}
-              className={`flex items-center px-4 md:p-2 cursor-pointer transition-colors hover:bg-gray-100 ${
-                location.pathname === Item.link ? "bg-gray-200" : ""
-              }`}
-            >
-              <div className="flex items-center md:gap-3 gap-0">
-                <Item.icon className="hidden md:block h-6 w-6 md:h-5 md:w-5" />
-                <span className="truncate">{Item.name}</span>
-              </div>
-            </Link>
-          ))}
-        </nav>
-        <div className="flex flex-row md:flex-col md:border-t md:pt-4 md:mt-6">
+    <aside className="sm:h-full flex flex-row sm:flex-col py-4 sm:px-4 overflow-x-auto scrollbar-hide sm:pt-20">
+      {/* Mobile layout - like UserSideBar (sm: and down) */}
+      <nav className="flex flex-row sm:hidden gap-2 items-center">
+        {adminNavbarMenu.map((Item, index) => (
           <Link
-            to="/"
-            className="flex md:items-center p-0 md:p-3 text-gray-600 rounded hover:bg-gray-100"
+            key={index}
+            to={Item.link}
+            className={`flex items-center px-4 py-2 cursor-pointer transition-colors hover:bg-gray-100 rounded ${
+              location.pathname === Item.link ? "bg-gray-200" : ""
+            }`}
           >
-            <IoMdHome className="mr-2 h-5 w-5" />
-            Go to the website
+            <div className="flex items-center gap-2">
+              <Item.icon className="h-5 w-5" />
+              <span className="truncate whitespace-nowrap">{Item.name}</span>
+            </div>
           </Link>
-          <Link
-            to="/"
-            className="flex items-center p-0 md:p-3 text-gray-600 rounded hover:bg-gray-100"
-          >
-            <IoLogOut className="mr-2 h-5 w-5" />
-            Log out
-          </Link>
+        ))}
+        <Link
+          to="/"
+          className="flex items-center px-4 py-2 text-gray-600 rounded hover:bg-gray-100"
+        >
+          <IoMdHome className="mr-2 h-5 w-5" />
+          <span>Home</span>
+        </Link>
+        <Link
+          to="/"
+          className="flex items-center px-4 py-2 text-gray-600 rounded hover:bg-gray-100"
+        >
+          <IoLogOut className="mr-2 h-5 w-5" />
+          <span>Logout</span>
+        </Link>
+      </nav>
+
+      {/* Desktop layout - like UserSideBar (sm: and up) */}
+      <nav className="hidden sm:flex sm:flex-col w-full gap-5 justify-between sm:h-full">
+        <h1 className="text-xl font-semibold text-center text-orange-400">Admin Panel</h1>
+        <div className="hidden sm:flex justify-center items-center gap-2">
+          <img
+            src={state.user.profilePic}
+            alt=""
+            className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center"
+          />
+          <p className="text-sm font-medium">{state.user.username}</p>
         </div>
-      </div>
-    </div>
+
+        <div className="w-full flex flex-row sm:flex-col sm:justify-between sm:h-full">
+          <div className="flex flex-row sm:flex-col sm:gap-2">
+            {adminNavbarMenu.map((Item, index) => (
+              <Link
+                key={index}
+                to={Item.link}
+                className={`w-full flex items-center gap-2 p-2 rounded cursor-pointer transition-colors hover:bg-gray-200 ${
+                  location.pathname === Item.link
+                    ? "bg-gray-200 font-semibold"
+                    : ""
+                }`}
+              >
+                <Item.icon className="h-5 w-5" />
+                <span className="flex-1">{Item.name}</span>
+              </Link>
+            ))}
+          </div>
+          <div className="flex flex-row sm:flex-col">
+            <Link
+              to="/"
+              className="w-full flex items-center gap-2 p-2 text-gray-600 rounded hover:bg-gray-200"
+            >
+              <IoMdHome className="h-5 w-5" />
+              <span className="flex-1">Home page</span>
+            </Link>
+            <Link
+              to="/"
+              className="w-full flex items-center gap-2 p-2 text-gray-600 rounded hover:bg-gray-200"
+            >
+              <IoLogOut className="h-5 w-5" />
+              <span className="flex-1">Log out</span>
+            </Link>
+          </div>
+        </div>
+      </nav>
+    </aside>
   );
 }
 export default AdminSidebar;
