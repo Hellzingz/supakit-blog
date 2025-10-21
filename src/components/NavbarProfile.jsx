@@ -1,5 +1,5 @@
 import { useAuth } from "@/context/authContext";
-import { ExpandDown } from "./icons/expandDown";
+import { ExpandDown } from "./icons/ExpandDown";
 import { CiUser } from "react-icons/ci";
 import NotificationBell from "./NotificationBell";
 
