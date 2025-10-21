@@ -1,6 +1,5 @@
 import { useParams } from "react-router-dom";
-// import { useEffect, useState } from "react";
-// import axios from "axios";
+
 import ReactMarkdown from "react-markdown";
 import AlertLogin from "@/components/AlertLogin";
 import { formatDate } from "@/utils/date";
@@ -12,7 +11,6 @@ import { useState } from "react";
 import { useAuth } from "@/context/authContext";
 
 function ViewPostPage() {
-  // const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
   const { isAuthenticated, state } = useAuth();
   const { id } = useParams();
@@ -31,7 +29,6 @@ function ViewPostPage() {
       </section>
     );
   }
-
   // Error state
   if (error) {
     return (
@@ -42,8 +39,6 @@ function ViewPostPage() {
       </section>
     );
   }
-
-  console.log(data.likes_count);
 
   return (
     <section className="mx-auto px-5 mt-5">
@@ -56,7 +51,7 @@ function ViewPostPage() {
         />
         <div className="max-w-300 mt-5">
           <div className="flex gap-3">
-            <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2">
+            <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2 cursor-pointer">
               {data.category}
             </button>
             <span>{formatDate(data.date)}</span>
@@ -69,12 +64,13 @@ function ViewPostPage() {
               </div>
               <p>{data.description}</p>
               <div className="sm:hidden">
-                <PersonalCard />
+                <PersonalCard data={data}/>
               </div>
               <LikeShare
                 isAuthenticated={isAuthenticated}
                 likes={likes}
                 user={user}
+                data={data}
                 postId={id}
                 setOpen={setOpen}
               />
@@ -82,11 +78,11 @@ function ViewPostPage() {
                 isAuthenticated={isAuthenticated}
                 setOpen={setOpen}
                 user={user}
-                postId={id}
+                postData={data}
               />
             </div>
             <div className="hidden sm:block sticky top-0 self-start w-80">
-              <PersonalCard />
+              <PersonalCard data={data}/>
             </div>
           </div>
         </div>

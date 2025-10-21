@@ -1,39 +1,39 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { NavBar } from "@/components/NavBar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
-import { registerValidate } from "@/utils/registerValidate";
+import { registerSchema, validateData } from "@/utils/validate";
 
 function RegisterPage() {
   const [name, setName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
+  const [errors, setErrors] = useState({});
 
   const { register } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      let valid = registerValidate(name, username, email, password);
-      if(Object.keys(valid).length !== 0){
-       return setError(valid)
-      }
-      
+    try {     
       const data = {
         name: name,
         username: username,
         email: email,
         password: password,
       };
-      console.log(valid,data);
-      register(data);
+      const { isValid, errors } = validateData(registerSchema, data);
+      if(!isValid){
+        return setErrors(errors);
+      }
+      await register(data);
       setName("")
       setUsername("")
       setEmail("")
       setPassword("")
+      navigate("/success");
     } catch (error) {
       console.log(error);
     }
@@ -63,7 +63,7 @@ function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
               />
-              {error?.name && <p className="text-red-500">{error.name}</p> }
+              {errors?.name && <p className="text-red-500">{errors.name}</p> }
             </div>
             <div className="relative space-y-1">
               <label
@@ -80,7 +80,7 @@ function RegisterPage() {
                 onChange={(e) => setUsername(e.target.value)}
                 className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
               />
-              {error?.username && <p className="text-red-500" >{error.username}</p> }
+              {errors?.username && <p className="text-red-500" >{errors.username}</p> }
             </div>
             <div className="relative space-y-1">
               <label
@@ -97,7 +97,7 @@ function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
               />
-              {error?.email && <p className="text-red-500">{error.email}</p> }
+              {errors?.email && <p className="text-red-500">{errors.email}</p> }
             </div>
             <div className="relative space-y-1">
               <label
@@ -114,12 +114,12 @@ function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
               />
-              {error?.password && <p className="text-red-500">{error.password}</p> }
+              {errors?.password && <p className="text-red-500">{errors.password}</p> }
             </div>
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors"
+                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer"
               >
                 Sign up
               </button>

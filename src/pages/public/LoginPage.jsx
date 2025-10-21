@@ -1,30 +1,37 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { NavBar } from "@/components/NavBar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
-import { loginValidate } from "@/utils/loginValidate";
 
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-
+  const [errors, setErrors] = useState({});
   const { login } = useAuth();
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-
-    let valid = loginValidate(email, password);
-    if (Object.keys(valid).length !== 0) {
-      return setError(valid)
+    if (email.trim() === "") {
+      return setErrors({ email: "Email is required" });
     }
-
-    const data = {
-      email: email,
-      password: password,
-    };
-    login(data);
+    if (password.trim() === "") {
+      return setErrors({ password: "Password is required" });
+    }
+    try {
+      const data = {
+        email: email,
+        password: password,
+      };
+      await login(data);
+      setEmail("");
+      setPassword("");
+      navigate("/");
+    } catch (error) {
+      console.log(error);
+    }
   };
   return (
     <div className="flex flex-col min-h-screen">
@@ -50,7 +57,7 @@ function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
               />
-              {error?.email && <p className="text-red-500">{error.email}</p>}
+              {errors?.email && <p className="text-red-500">{errors.email}</p>}
             </div>
             <div className="relative space-y-1">
               <label
@@ -67,12 +74,14 @@ function LoginPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
               />
-              {error?.password && <p className="text-red-500">{error.password}</p>}
+              {errors?.password && (
+                <p className="text-red-500">{errors.password}</p>
+              )}
             </div>
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors"
+                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer"
               >
                 Log in
               </button>

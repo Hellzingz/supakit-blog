@@ -12,12 +12,12 @@ function AuthenticationRoute({ isLoading, isAuthenticated, children }) {
     );
   }
 
-  if (isAuthenticated) {
-    // คืนค่า null ขณะที่ Navigate ทำการเปลี่ยนเส้นทาง
-    return <Navigate to="/" replace />;
+  if (!isAuthenticated) {
+    // ผู้ใช้ยังไม่ได้ล็อกอิน ให้ไปที่หน้า login
+    return <Navigate to="/login" replace />;
   }
 
-  // ผู้ใช้มีการยืนยันตัวตนและมีบทบาทที่ถูกต้อง
+  // ผู้ใช้มีการยืนยันตัวตนแล้ว
   return children;
 }
 

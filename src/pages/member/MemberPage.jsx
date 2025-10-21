@@ -1,8 +1,8 @@
-import UserProfile from "@/components/user/UserProfile";
+import UserProfile from "@/components/user/UserProfileForm";
 import { UserRound } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/authContext";
-import ResetPassword from "@/components/user/ResetPassword";
+import ResetPassword from "@/components/user/๊UserResetPassword";
 
 function MemberPage() {
   const { state } = useAuth();

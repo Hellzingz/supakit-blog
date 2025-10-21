@@ -1,0 +1,259 @@
+import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/ui/avatar";
+import { useState, useEffect } from "react";
+import { toastSuccess, toastError } from "@/utils/toast";
+import {
+  userProfileSchema,
+  validateData,
+  checkUsernameAvailability,
+  checkEmailAvailability,
+} from "@/utils/validate";
+import axios from "axios";
+import { UserAvartar } from "../icons/UserAvartar";
+import { useAuth } from "@/context/authContext";
+
+function UserProfileForm() {
+  const [imageFile, setImageFile] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [profile, setProfile] = useState({
+    id: "",
+    name: "",
+    username: "",
+    email: "",
+    image: "",
+  });
+  const { state } = useAuth();
+  const user = state?.user;
+  useEffect(() => {
+    setProfile({
+      id: user?.id,
+      name: user?.name,
+      username: user?.username,
+      email: user?.email,
+      image: user?.profilePic || user?.image,
+    });
+  }, [user]);
+
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+
+    // ตรวจสอบประเภทของไฟล์
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
+
+    if (!allowedTypes.includes(file.type)) {
+      alert("Please upload a valid image file (JPEG, PNG, GIF, WebP).");
+      return;
+    }
+
+    // ตรวจสอบขนาดของไฟล์ (เช่น ขนาดไม่เกิน 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      alert("The file is too large. Please upload an image smaller than 5MB.");
+      return;
+    }
+    // เก็บข้อมูลไฟล์
+    setImageFile({ file });
+  };
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProfile((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
+    }
+  };
+
+  const validateForm = async () => {
+    // Validate using Zod schema
+    const validation = validateData(userProfileSchema, {
+      name: profile.name,
+      username: profile.username,
+      email: profile.email,
+    });
+
+    if (!validation.isValid) {
+      setErrors(validation.errors);
+      return false;
+    }
+
+    // Check for duplicates
+    const newErrors = {};
+
+    // Check username availability
+    const usernameCheck = await checkUsernameAvailability(
+      profile.username,
+      profile.id
+    );
+    if (!usernameCheck.isAvailable) {
+      newErrors.username = usernameCheck.message || "Username already exists";
+    }
+
+    // Check email availability
+    const emailCheck = await checkEmailAvailability(profile.email, profile.id);
+    if (!emailCheck.isAvailable) {
+      newErrors.email = emailCheck.message || "Email already exists";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handaleSave = async (e) => {
+    e.preventDefault();
+
+    // Validate form before submitting
+    const isValid = await validateForm();
+    if (!isValid) {
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+
+      // ถ้ามีไฟล์ใหม่ ใช้ FormData
+      if (imageFile?.file) {
+        const formData = new FormData();
+        formData.append("id", profile.id);
+        formData.append("name", profile.name);
+        formData.append("username", profile.username);
+        formData.append("imageFile", imageFile.file);
+
+        await axios.put(
+          `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      } else {
+        await axios.put(
+          `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+          {
+            id: profile.id,
+            name: profile.name,
+            username: profile.username,
+          },
+          {
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+      }
+
+      toastSuccess("Updated Successfully");
+      // รีเซ็ตไฟล์หลังจากบันทึกสำเร็จ
+      setImageFile(null);
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toastError("Update Failed");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <div className="w-full max-w-2xl">
+      <div className="flex items-center gap-4">
+        <div className="sm:hidden flex items-center gap-2 border-r-2 border-gray-200 pr-4">
+          {user?.profilePic ? <img src={user.profilePic} alt="profile-pic" className="w-10 h-10 rounded-full" /> : <UserAvartar />}
+          <span className="text-xl font-semibold text-gray-500">{user?.name}</span>
+        </div>
+        <span className="text-xl sm:text-2xl font-semibold">Profile</span>
+      </div>
+      <div className="bg-gray-100 rounded-xl p-4 sm:p-10 mt-5">
+        <form onSubmit={handaleSave} className="flex flex-col gap-3">
+          <div className="flex items-center mb-6">
+            <Avatar className="w-24 h-24 mr-4">
+              {imageFile ? (
+                <img
+                  src={URL.createObjectURL(imageFile.file)}
+                  alt="Preview"
+                  className="max-w-full max-h-48 object-contain"
+                />
+              ) : profile.image ? (
+                <img
+                  src={profile.image}
+                  alt="profile-pic"
+                  className="max-w-full max-h-48 object-contain"
+                />
+              ) : (
+                <UserAvartar className="w-24 h-24" />
+              )}
+            </Avatar>
+            <Button asChild>
+              <div className="flex items-center justify-center w-full max-w-40">
+                <input
+                  className="w-full max-w-20"
+                  id="file-upload"
+                  name="file-upload"
+                  type="file"
+                  onChange={handleFileChange}
+                />
+              </div>
+            </Button>
+          </div>
+          <label htmlFor="name">Name</label>
+          <input
+            type="text"
+            name="name"
+            className={`border p-2 rounded-md ${
+              errors.name ? "border-red-500" : ""
+            }`}
+            value={profile.name}
+            onChange={handleInputChange}
+            placeholder="Enter your name (4-20 characters, English only)"
+          />
+          {errors.name && <p className="text-red-500 text-sm">{errors.name}</p>}
+
+          <label htmlFor="username">Username</label>
+          <input
+            type="text"
+            name="username"
+            className={`border p-2 rounded-md ${
+              errors.username ? "border-red-500" : ""
+            }`}
+            value={profile.username}
+            onChange={handleInputChange}
+            placeholder="Enter username (4-15 characters, letters and numbers only)"
+          />
+          {errors.username && (
+            <p className="text-red-500 text-sm">{errors.username}</p>
+          )}
+
+          <label htmlFor="email">Email</label>
+          <input
+            type="email"
+            name="email"
+            className={`border p-2 rounded-md ${
+              errors.email ? "border-red-500" : ""
+            }`}
+            value={profile.email}
+            onChange={handleInputChange}
+            placeholder="Enter your email address"
+          />
+          {errors.email && (
+            <p className="text-red-500 text-sm">{errors.email}</p>
+          )}
+          <Button disabled={isLoading} className="w-[30%] mt-7">
+            Save
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+}
+export default UserProfileForm;

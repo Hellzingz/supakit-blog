@@ -6,16 +6,13 @@ import axios from "axios"
 import { toastSuccess, toastError } from "@/utils/toast"
 import useFetch from "@/hooks/useFetch"
 
-function AdminCategoryEdit() {
+function CategoryEdit() {
   const { id } = useParams()
   const navigate = useNavigate()
   const [category, setCategory] = useState({name: ''})
   const [isLoading, setIsLoading] = useState(false)
 
-  // Get category data from server using useFetch
   const { data: categoryData } = useFetch(`${import.meta.env.VITE_API_URL}/categories/${id}`)
-
-  // Update category state when data is fetched
   useEffect(() => {
     if (categoryData) {
       setCategory(categoryData)
@@ -24,10 +21,6 @@ function AdminCategoryEdit() {
 
   console.log(category);
   
-
-  
-
-  // Update category
   const handleSave = async () => {
     if (!category.name.trim()) {
       toastError("Category name is required")
@@ -51,17 +44,17 @@ function AdminCategoryEdit() {
 
   return (
     <div className="w-full">
-      <div className="flex justify-between items-center p-10 mb-6 border-b">
+      <div className="flex justify-between items-center p-4 md:p-10 mb-6 border-b">
         <h2 className="text-2xl font-semibold">Edit Category</h2>
         <Button 
-          className="px-8 py-2 rounded-full cursor-pointer"
+          className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
           onClick={handleSave}
           disabled={isLoading}
         >
           {isLoading ? "Saving..." : "Save"}
         </Button>
       </div>
-      <div className="p-10">
+      <div className="p-4 md:p-10">
         <div className="max-w-md">
           <label htmlFor="categoryName" className="block text-sm font-medium mb-2">
             Category Name
@@ -79,4 +72,4 @@ function AdminCategoryEdit() {
   )
 }
 
-export default AdminCategoryEdit
+export default CategoryEdit

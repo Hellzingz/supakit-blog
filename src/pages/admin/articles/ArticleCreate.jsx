@@ -15,7 +15,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
 
-function AdminCreate() {
+function ArticleCreate() {
   const {state} = useAuth()
 
   
@@ -85,10 +85,8 @@ function AdminCreate() {
     formData.append("description", post.description);
     formData.append("content", post.content);
     formData.append("status_id", statusId);
+    // formData.append("user_id", state.user.id);
     formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
-
-    console.log(formData);
-    
 
     try {
       // ส่งข้อมูลไปยัง Backend
@@ -98,8 +96,15 @@ function AdminCreate() {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
         },
       });
+      const notificationType = "Published";
+      const message = `${notificationType} new article.`;
+      await axios.post(`${import.meta.env.VITE_API_URL}/notifications`, {
+        type: notificationType,
+        target_type: "post",
+        actor_id: state.user.id,
+        message: message,
+      });
       toastSuccess("Created Successfully");
-      console.log(post);    
       navigate('/admin')
     } catch (error) {
       console.error("Error creating post:", error);
@@ -111,12 +116,12 @@ function AdminCreate() {
 
   return (
     <div className="flex w-full mx-auto h-screen bg-gray-100">
-      <main className="flex-1 px-10 bg-gray-50 overflow-auto">
-        <div className="flex justify-between items-center border-b py-10 mb-6">
+      <main className="flex-1 px-4 sm:px-10 bg-white overflow-auto">
+        <div className="flex justify-between items-center border-b py-4 sm:py-10 mb-6">
           <h2 className="text-2xl font-semibold">Create article</h2>
-          <div className="flex flex-col md:flex-row gap-2">
+          <div className="flex flex-col sm:flex-row gap-2">
             <Button
-              className="px-8 py-2 rounded-full"
+              className="px-4 sm:px-8 py-2 rounded-full cursor-pointer"
               variant="outline"
               onClick={() => handleSave(1)}
               disabled={isLoading}
@@ -124,7 +129,7 @@ function AdminCreate() {
               Save as draft
             </Button>
             <Button
-              className="px-8 py-2 rounded-full"
+              className="px-4 sm:px-8 py-2 rounded-full cursor-pointer"
               onClick={() => handleSave(2)}
               disabled={isLoading}
             >
@@ -243,4 +248,4 @@ function AdminCreate() {
     </div>
   );
 }
-export default AdminCreate;
+export default ArticleCreate;

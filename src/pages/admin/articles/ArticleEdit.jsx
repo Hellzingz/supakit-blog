@@ -11,11 +11,12 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import useFetch from "@/hooks/useFetch";
+import ConfirmModal from "@/components/ConfirmModal";
 
-function AdminEdit() {
+function ArticleEdit() {
   const { id } = useParams();
   const [post, setPost] = useState({
     title: "",
@@ -26,6 +27,20 @@ function AdminEdit() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const handleDeleteClick = async () => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
+      toastSuccess("Deleted Successfully");
+      navigate("/admin/articles");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toastError("Deleted Failed");
+    }
+  };
+
 
   // Get post data using useFetch
   const { data: postData } = useFetch(
@@ -123,16 +138,16 @@ function AdminEdit() {
 
   return (
     <div className="flex w-full h-screen bg-gray-100">
-      <main className="flex-1 py-5 px-10 bg-gray-50 overflow-auto">
-        <div className="flex justify-between items-center border-b py-10 mb-6">
+      <main className="flex-1 py-5 px-4 md:px-10 bg-gray-50 overflow-auto">
+        <div className="w-full flex justify-between items-center border-b py-4 md:py-10 mb-6">
           <h2 className="text-2xl font-semibold">
             Edit article {id ? `#${id}` : ""}
           </h2>
-          <div className="space-x-2">
+          <div className="flex flex-col md:flex-row gap-2">
             <Button
               disabled={isLoading}
               onClick={() => handleSave(1)}
-              className="px-8 py-2 rounded-full"
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
               variant="outline"
             >
               Save as draft
@@ -140,7 +155,7 @@ function AdminEdit() {
             <Button
               disabled={isLoading}
               onClick={() => handleSave(2)}
-              className="px-8 py-2 rounded-full"
+              className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
             >
               Save
             </Button>
@@ -155,7 +170,7 @@ function AdminEdit() {
             >
               Thumbnail image
             </label>
-            <div className="flex items-end space-x-4">
+            <div className="flex flex-col md:flex-row items-center md:items-end gap-2 space-x-4">
               <div className="flex justify-center items-center w-full max-w-lg h-64 px-6 py-20 border-2 border-gray-300 border-dashed rounded-md bg-gray-50">
                 <div className="text-center space-y-2">
                   {imageFile ? (
@@ -165,7 +180,8 @@ function AdminEdit() {
                       className="max-w-full max-h-48 object-contain"
                     />
                   ) : (
-                    <img src={post.image} />
+
+                    <img className="max-w-full max-h-48 object-contain" src={post.image} />
                   )}
                 </div>
               </div>
@@ -253,12 +269,22 @@ function AdminEdit() {
             />
           </div>
         </form>
-        <button className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium flex items-center gap-1 mt-4">
+        <button 
+        onClick={() => setShowConfirmModal(true)}
+        className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium flex items-center gap-1 mt-4">
           <Trash2 className="h-5 w-5" />
           Delete article
         </button>
       </main>
+      {showConfirmModal && (
+        <ConfirmModal
+          title="Delete Article"
+          description="Are you sure you want to delete this article?"
+          onCancel={() => setShowConfirmModal(false)}
+          onConfirm={() => handleDeleteClick(id)}
+        />
+      )}
     </div>
   );
 }
-export default AdminEdit;
+export default ArticleEdit;

@@ -205,3 +205,30 @@ body {
   margin: 2em 0;
   border-radius: 12px;
 }
+
+/* Custom scrollbar utilities */
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari and Opera */
+}
+
+/* Navbar button styles */
+.nav-button-white {
+  @apply px-10 py-2 text-center rounded-full border bg-white text-black border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
+}
+
+.nav-button-dark {
+  @apply px-10 py-2 text-center rounded-full border bg-black text-white border-[#75716B] cursor-pointer hover:bg-white hover:text-black;
+}
+
+.nav-button-mobile-white {
+  @apply px-8 py-2 text-center rounded-full border bg-white text-black border-[#75716B] cursor-pointer hover:bg-black hover:text-white;
+}
+
+.nav-button-mobile-dark {
+  @apply px-8 py-2 text-center rounded-full border bg-black text-white border-[#75716B] cursor-pointer hover:bg-white hover:text-black;
+}

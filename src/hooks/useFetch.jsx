@@ -14,7 +14,12 @@ const useFetch = (url) => {
       setData(res.data);
     } catch (error) {
       console.error("API Error:", error);
-      setError(error);
+      if (error.response?.status === 401) {
+        setData([]);
+        setError(null);
+      } else {
+        setError(error);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -22,7 +27,6 @@ const useFetch = (url) => {
 
   useEffect(() => {
     fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [url]);
   
   return { data, isLoading, error, fetchData };

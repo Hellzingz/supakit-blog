@@ -9,10 +9,10 @@ function BlogCard({ post }) {
         <div className="flex flex-col gap-4">
           <Link
             to={`post/${post.id}`}
-            className="relative h-[212px] sm:h-[360px]"
+            className="relative h-[212px] sm:h-[360px] cursor-pointer"
           >
             <img
-              className="w-full h-full object-cover rounded-md"
+              className="w-full h-full object-fill rounded-md"
               src={image}
               alt="Understanding Cat Behavior: Why Your Feline Friend Acts the Way They Do"
             />
@@ -26,7 +26,7 @@ function BlogCard({ post }) {
             <div>
               <Link
                 to={`post/${post.id}`}
-                className="text-start font-bold text-xl mb-2 line-clamp-2 hover:underline"
+                className="text-start font-bold text-xl mb-2 line-clamp-2 hover:underline cursor-pointer"
               >
                 {title}
               </Link>
