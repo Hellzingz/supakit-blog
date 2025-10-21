@@ -156,7 +156,7 @@ function ArticleList() {
           
           {/* Table body with article data */}
           <TableBody>
-            {data?.posts?.map((post, index) => (
+            {Array.isArray(data?.posts) && data.posts.map((post, index) => (
               <TableRow key={index}>
                 <TableCell className="font-medium">{post.title}</TableCell>
                 <TableCell>{post.category}</TableCell>
