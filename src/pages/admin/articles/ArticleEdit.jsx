@@ -11,9 +11,10 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import useFetch from "@/hooks/useFetch";
+import ConfirmModal from "@/components/ConfirmModal";
 
 function ArticleEdit() {
   const { id } = useParams();
@@ -26,6 +27,20 @@ function ArticleEdit() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+
+  const handleDeleteClick = async () => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
+      toastSuccess("Deleted Successfully");
+      navigate("/admin/articles");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toastError("Deleted Failed");
+    }
+  };
+
 
   // Get post data using useFetch
   const { data: postData } = useFetch(
@@ -254,11 +269,21 @@ function ArticleEdit() {
             />
           </div>
         </form>
-        <button className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium flex items-center gap-1 mt-4">
+        <button 
+        onClick={() => setShowConfirmModal(true)}
+        className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium flex items-center gap-1 mt-4">
           <Trash2 className="h-5 w-5" />
           Delete article
         </button>
       </main>
+      {showConfirmModal && (
+        <ConfirmModal
+          title="Delete Article"
+          description="Are you sure you want to delete this article?"
+          onCancel={() => setShowConfirmModal(false)}
+          onConfirm={() => handleDeleteClick(id)}
+        />
+      )}
     </div>
   );
 }

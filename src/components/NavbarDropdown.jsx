@@ -10,6 +10,7 @@ const NavbarDropdown = ({ isAuthenticated, state }) => {
   const { logout } = useAuth();
   const role = state?.user?.role;
   const navigate = useNavigate();
+
   const handleLogout = () => {
     logout();
     navigate("/");
@@ -33,6 +34,8 @@ const NavbarDropdown = ({ isAuthenticated, state }) => {
             link: "/user/reset",
           },
         ];
+
+    
   return (
     <>
       {isAuthenticated && (

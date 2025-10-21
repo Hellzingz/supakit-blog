@@ -27,6 +27,7 @@ import AdminNotifications from "./pages/admin/dashboard/AdminNotifications";
 import AdminProfile from "./pages/admin/profile/AdminProfile";
 import AdminPasswordReset from "./pages/admin/profile/AdminPasswordReset";
 import CategoryEdit from "./pages/admin/categories/CategoryEdit";
+import CreateCategory from "./pages/admin/categories/CreateCategory";
 
 function App() {
   return (
@@ -71,6 +72,7 @@ function App() {
           <Route path="edit/:id" element={<ArticleEdit />} />
           <Route path="category" element={<CategoryList />} />
           <Route path="category/edit/:id" element={<CategoryEdit />} />
+          <Route path="category/create" element={<CreateCategory />} />
           <Route path="profile" element={<AdminProfile />} />
           <Route path="reset" element={<AdminPasswordReset />} />
           <Route path="notification" element={<AdminNotifications />} />

@@ -1,6 +1,5 @@
-import { PenSquare, Trash2 } from "lucide-react";
-import { Button } from "../../../components/ui/button";
-import { Input } from "../../../components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -10,30 +9,42 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import axios from "axios";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
+import { TrashIcon } from "@/components/icons/TrashIcon";
+import { EditIcon } from "@/components/icons/EditIcon";
+import { toastSuccess } from "@/utils/toast";
+import { toastError } from "@/utils/toast";
 
 function CategoryList() {
   const navigate = useNavigate()
-  const {id} = useParams()
 
-  // Get categories using useFetch
   const { data: categories, fetchData } = useFetch(`${import.meta.env.VITE_API_URL}/categories`)
 
-  const handleDelete = async()=>{
-    await axios.delete(`${import.meta.env.VITE_API_URL}/categories/${id}`)
-    fetchData() // Refresh data after delete
+  const handleDelete = async(id)=>{
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/categories/${id}`)
+      fetchData()
+      toastSuccess("Delete category", "Category has been successfully deleted.")
+    } catch (error) {
+      console.error("Error deleting category:", error)
+      toastError("Delete category", "Category has been failed to delete.")
+    }
   }
 
     const handleEdit = (id) =>{
       navigate(`/admin/category/edit/${id}`);
     }
 
+    const handleCreate = () =>{
+      navigate(`/admin/category/create`);
+    }
+
     return (
       <div className="w-full">
         <div className="flex justify-between items-center p-4 md:p-10 mb-6 border-b">
           <h2 className="text-2xl font-semibold">Category management</h2>
-          <Button className="px-4 md:px-8 py-2 rounded-full cursor-pointer">
+          <Button onClick={handleCreate} className="px-4 md:px-8 py-2 rounded-full cursor-pointer">
             + Create category
           </Button>
         </div>
@@ -54,10 +65,10 @@ function CategoryList() {
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell className="text-right flex">
                   <Button onClick={()=>handleEdit(category.id)} variant="ghost" size="sm">
-                    <PenSquare className="h-4 w-4 hover:text-muted-foreground" />
+                    <EditIcon />
                   </Button>
                   <Button onClick={()=>handleDelete(category.id)} variant="ghost" size="sm">
-                    <Trash2 className="h-4 w-4 hover:text-muted-foreground" />
+                    <TrashIcon />
                   </Button>
                 </TableCell>
               </TableRow>

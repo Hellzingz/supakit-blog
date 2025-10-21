@@ -139,9 +139,6 @@ function AdminProfile() {
       setIsLoading(false);
     }
   };
-
-  console.log(profile);
-
   return (
     <div className="flex w-full bg-gray-100">
       <main className="flex-1 p-4 md:p-10 bg-white overflow-auto">

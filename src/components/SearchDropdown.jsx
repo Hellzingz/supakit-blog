@@ -1,10 +1,16 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, setSearchKeyword }) => {
   const [isOpen, setIsOpen] = useState(false);
   const filtered = data?.filter((item) => item.title.toLowerCase().includes(searchKeyword.toLowerCase())) || [];
+  
+  const dropdownRef = useOutsideClick(() => {
+    setIsOpen(false);
+  }, isOpen);
+  
   const handleSelectPost = (item) => {
     setSelectedPost(item);
     setIsOpen(false);
@@ -17,7 +23,7 @@ const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, se
   };
   return (
     <>
-      <div className="relative">
+      <div className="relative" ref={dropdownRef}>
         <Search className="absolute right-3 top-2 text-gray-400 cursor-pointer" />
         <Input
           placeholder="Search"
