@@ -1,4 +1,3 @@
-import { PenSquare, Trash2 } from "lucide-react";
 import { Button } from "../../../components/ui/button";
 import { Input } from "../../../components/ui/input";
 import {
@@ -22,6 +21,8 @@ import { useNavigate } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
 import ConfirmModal from "@/components/ConfirmModal";
 import { toastSuccess } from "@/utils/toast";
+import { TrashIcon } from "@/components/icons/TrashIcon";
+import { EditIcon } from "@/components/icons/EditIcon";
 
 const statusData = [
   { id: 2, name: "Publish" },
@@ -29,12 +30,10 @@ const statusData = [
 ];
 
 function ArticleList() {
-  // ===== STATE MANAGEMENT =====
-  // Pagination state
+
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   
-  // Filter states
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
@@ -43,8 +42,6 @@ function ArticleList() {
   const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [articleId, setArticleId] = useState(null);
 
-  // ===== API DATA FETCHING =====
-  // Build query parameters for posts API
   const params = new URLSearchParams();
   params.set("page", page);
   params.set("limit", limit);
@@ -53,31 +50,25 @@ function ArticleList() {
   params.set("status", status);
   const url = `${import.meta.env.VITE_API_URL}/posts?${params.toString()}`;
   
-  // Fetch posts data with filters
   const { data, isLoading, error, fetchData } = useFetch(url);
 
-  // Fetch categories for filter dropdown
   const { data: categories } = useFetch(
     `${import.meta.env.VITE_API_URL}/categories`
   );
 
-  // ===== EVENT HANDLERS =====
-  // Navigate to edit article page
   const handleEdit = (id) => {
     navigate(`/admin/edit/${id}`);
   };
 
-  // Navigate to create article page
   const handleCreate = () => {
     navigate(`/admin/create`);
   };
 
-  // Delete article and refresh data
   const handleDelete = async (id) => {
     await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
     setShowConfirmModal(false);
     setArticleId(null);
-    fetchData(); // Refresh the posts list
+    fetchData();
     toastSuccess("Post deleted successfully");
   };
 
@@ -86,8 +77,6 @@ function ArticleList() {
     setArticleId(id);
   };
 
-  // ===== LOADING & ERROR STATES =====
-  // Show loading spinner while fetching data
   if (isLoading) {
     return (
       <div className="w-full">
@@ -98,7 +87,6 @@ function ArticleList() {
     );
   }
 
-  // Show error message if API call fails
   if (error) {
     return (
       <div className="w-full">
@@ -180,7 +168,6 @@ function ArticleList() {
                 
                 {/* Action buttons column */}
                 <TableCell className="text-right">
-                  {/* Edit button */}
                   <Button
                     variant="ghost"
                     size="sm"
@@ -188,16 +175,14 @@ function ArticleList() {
                       handleEdit(post.id);
                     }}
                   >
-                    <PenSquare className="h-4 w-4 hover:text-muted-foreground" />
+                    <EditIcon />
                   </Button>
-                  
-                  {/* Delete button */}
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => handleDeleteClick(post.id)}
                   >
-                    <Trash2 className="h-4 w-4 hover:text-muted-foreground" />
+                    <TrashIcon />
                   </Button>
                 </TableCell>
               </TableRow>

@@ -1,6 +1,7 @@
 import React from "react";
 import Logo from "../assets/img/logo.png";
 import { useToggle } from "../hooks/useToggle";
+import { useOutsideClick } from "../hooks/useOutsideClick";
 import { GiHamburgerMenu } from "react-icons/gi";
 import { Link } from "react-router-dom";
 import NavbarProfile from "./NavbarProfile";
@@ -11,6 +12,12 @@ export function NavBar() {
   const { toggle, changeToggle } = useToggle(false);
   const { state } = useAuth();
   const isAuthenticated = Boolean(state?.user);
+
+  const dropdownRef = useOutsideClick(() => {
+    if (toggle) {
+      changeToggle();
+    }
+  }, toggle);
 
   return (
     <div className="w-full bg-white sm:border-b border-gray-200 py-4 sm:px-10 md:px-20">
@@ -51,7 +58,10 @@ export function NavBar() {
       </nav>
 
       {toggle && (
-        <div className="w-full bg-white sm:absolute sm:max-w-[210px] sm:border sm:border-gray-200 sm:shadow-md sm:rounded-md sm:top-18 sm:right-30">
+        <div 
+          ref={dropdownRef}
+          className="w-full bg-white sm:absolute sm:max-w-[210px] sm:border sm:border-gray-200 sm:shadow-md sm:rounded-md sm:top-18 sm:right-30"
+        >
           <NavbarDropdown isAuthenticated={isAuthenticated} state={state} />
         </div>
       )}

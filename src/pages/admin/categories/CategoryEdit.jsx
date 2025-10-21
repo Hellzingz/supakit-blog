@@ -12,10 +12,7 @@ function CategoryEdit() {
   const [category, setCategory] = useState({name: ''})
   const [isLoading, setIsLoading] = useState(false)
 
-  // Get category data from server using useFetch
   const { data: categoryData } = useFetch(`${import.meta.env.VITE_API_URL}/categories/${id}`)
-
-  // Update category state when data is fetched
   useEffect(() => {
     if (categoryData) {
       setCategory(categoryData)
@@ -24,10 +21,6 @@ function CategoryEdit() {
 
   console.log(category);
   
-
-  
-
-  // Update category
   const handleSave = async () => {
     if (!category.name.trim()) {
       toastError("Category name is required")
