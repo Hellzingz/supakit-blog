@@ -40,7 +40,7 @@ function AdminNotifications() {
           </div>
         ) : (
           <div className="flex flex-col gap-4">
-            {data?.map((notification) => (
+            {Array.isArray(data) && data.map((notification) => (
               <div
                 key={notification.id}
                 onClick={() => handleRead(notification)}
