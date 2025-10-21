@@ -119,7 +119,7 @@ function ArticleList() {
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              {statusData?.map((status) => (
+              {Array.isArray(statusData) && statusData.map((status) => (
                 <SelectItem key={status.id} value={status.id}>
                   {status.name}
                 </SelectItem>
@@ -132,7 +132,7 @@ function ArticleList() {
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              {categories?.map((category) => (
+              {Array.isArray(categories) && categories.map((category) => (
                 <SelectItem key={category.id} value={category.id.toString()}>
                   {category.name}
                 </SelectItem>

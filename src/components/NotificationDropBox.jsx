@@ -19,7 +19,7 @@ const NotificationDropBox = ({ data, handleOpen }) => {
 
   return (
     <div className="w-full bg-white border border-gray-200 rounded-lg flex flex-col gap-4 shadow-xl px-4 py-6">
-      {notifications?.map((notification) => (
+      {Array.isArray(notifications) && notifications.map((notification) => (
         <div
           onClick={() => handleRead(notification)}
           key={notification.id}

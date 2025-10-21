@@ -71,7 +71,7 @@ const CommentSection = ({ isAuthenticated, setOpen, user, postData }) => {
         </div>
       </div>
       <div>
-        {comments?.map((comment, index) => (
+        {Array.isArray(comments) && comments.map((comment, index) => (
           <div key={index} className="flex flex-col gap-2 mb-4">
             <div className="flex gap-5">
               <img

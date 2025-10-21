@@ -5,7 +5,7 @@ import { useOutsideClick } from "@/hooks/useOutsideClick";
 
 const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, setSearchKeyword }) => {
   const [isOpen, setIsOpen] = useState(false);
-  const filtered = data?.filter((item) => item.title.toLowerCase().includes(searchKeyword.toLowerCase())) || [];
+  const filtered = Array.isArray(data) ? data.filter((item) => item.title.toLowerCase().includes(searchKeyword.toLowerCase())) : [];
   
   const dropdownRef = useOutsideClick(() => {
     setIsOpen(false);
@@ -36,7 +36,7 @@ const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, se
           <div className="w-full absolute border rounded-md top-10 left-0 bg-white z-50">
             {!data ? (
               <div className="w-full px-4 py-2 text-gray-500">Loading...</div>
-            ) : filtered?.length > 0 ? (
+            ) : Array.isArray(filtered) && filtered.length > 0 ? (
               filtered.map((item) => (
                 <div
                   key={item.id}

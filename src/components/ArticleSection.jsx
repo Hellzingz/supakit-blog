@@ -109,7 +109,7 @@ function ArticleSection() {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">All Categories</SelectItem>
-                {categories?.map((category) => (
+                {Array.isArray(categories) && categories.map((category) => (
                   <SelectItem key={category.id} value={category.id.toString()}>
                     {category.name}
                   </SelectItem>
@@ -132,7 +132,7 @@ function ArticleSection() {
           >
             All
           </button>
-          {categories?.map((category) => (
+          {Array.isArray(categories) && categories.map((category) => (
             <button
               key={category.id}
               value={category.id.toString()}

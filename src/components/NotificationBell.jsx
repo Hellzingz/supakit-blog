@@ -10,9 +10,9 @@ const NotificationBell = () => {
   const { data } = useFetch(
     `${import.meta.env.VITE_API_URL}/notifications/${state.user.id}`
   );
-  const unreadNotifications = data.filter(
+  const unreadNotifications = Array.isArray(data) ? data.filter(
     (notification) => !notification.is_read
-  );
+  ) : [];
   const isUnread = unreadNotifications.length > 0;
   console.log(data);
   const handleOpen = () => {

@@ -60,7 +60,7 @@ function CategoryList() {
               </TableRow>
             </TableHeader>
             <TableBody>
-            {categories.map((category, index) => (
+            {Array.isArray(categories) && categories.map((category, index) => (
               <TableRow key={index}>
                 <TableCell className="font-medium">{category.name}</TableCell>
                 <TableCell className="text-right flex">
