@@ -44,13 +44,16 @@ function ArticleSection() {
           `${import.meta.env.VITE_API_URL}/posts?${params.toString()}`
         );
 
+        // Ensure posts is an array before using it
+        const posts = Array.isArray(response.data.posts) ? response.data.posts : [];
+
         if (searchKeyword !== "") {
-          setPosts(response.data.posts);
+          setPosts(posts);
         }
         if (selectedPost) {
-          setPosts(response.data.posts);
+          setPosts(posts);
         }
-        setPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
+        setPosts((prevPosts) => [...prevPosts, ...posts]);
         if (response.data.currentPage >= response.data.totalPages) {
           setHasMore(false); // No more posts to load
         }
