@@ -209,10 +209,10 @@ function ArticleSection() {
         <div className="text-center text-gray-500">No posts found</div>
       )}
       {hasMore && (
-        <div className="text-center mt-8">
+        <div className="text-center mt-10 md:mt-15">
           <button
             onClick={handleLoadMore}
-            className="hover:text-muted-foreground font-medium underline cursor-pointer"
+            className="hover:text-muted-foreground font-medium cursor-pointer"
           >
             {isLoading ? (
               <ImSpinner2
@@ -221,7 +221,9 @@ function ArticleSection() {
                 size={40}
               />
             ) : (
-              "View more"
+              <div className="flex items-center gap-2 bg-green-300 hover:bg-green-400 cursor-pointer text-black rounded-sm px-4 py-2">
+                <span>View more</span>
+              </div>
             )}
           </button>
         </div>

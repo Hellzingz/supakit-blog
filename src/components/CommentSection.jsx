@@ -3,7 +3,7 @@ import { Textarea } from "./ui/textarea";
 import { useState } from "react";
 import useFetch from "@/hooks/useFetch";
 import { formatDate } from "@/utils/date";
-
+import { toast } from "sonner";
 const CommentSection = ({ isAuthenticated, setOpen, user, postData }) => {
   const { data } = useFetch(
     `${import.meta.env.VITE_API_URL}/posts/${postData.id}/comments`
@@ -13,6 +13,10 @@ const CommentSection = ({ isAuthenticated, setOpen, user, postData }) => {
 
   const [comment, setComment] = useState("");
   const handleSend = async () => {
+    if (comment.trim() === "") {
+      toast.error("No comment to send");
+      return;
+    }
     try {
       if (!isAuthenticated) {
         setOpen(true);
@@ -21,23 +25,14 @@ const CommentSection = ({ isAuthenticated, setOpen, user, postData }) => {
       const data = {
         post_id: postData.id,
         user_id: user?.id,
+        post_title: postData?.title,
         comment_text: comment,
       };
       await axios.post(
         `${import.meta.env.VITE_API_URL}/posts/${postData.id}/comments`,
         data
       );
-      const notificationType = "commented";
-      const message = `${notificationType} on your article: ${postData?.title}`;   
-      await axios.post(`${import.meta.env.VITE_API_URL}/notifications`, {
-        type: notificationType,
-        target_type: "post",
-        recipient_id: postData?.user?.id,
-        actor_id: user?.id,
-        target_id: postData.id,
-        comment_text: comment,
-        message: message,
-      });
+      toast.success("Comment sent successfully");
       setComment("");
     } catch (error) {
       console.log(error);
@@ -48,7 +43,7 @@ const CommentSection = ({ isAuthenticated, setOpen, user, postData }) => {
     <div className="mt-10">
       <div className="mb-20">
         <h3 className="text-lg font-semibold mb-2">Comment</h3>
-        <div>
+        <div className="w-full">
           <Textarea
             value={comment}
             onChange={(e) => setComment(e.target.value)}

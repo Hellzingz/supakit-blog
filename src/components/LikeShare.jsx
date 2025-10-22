@@ -1,13 +1,13 @@
 import { Button } from "./ui/button";
-import { CiFaceSmile } from "react-icons/ci";
 import { IoCopyOutline } from "react-icons/io5";
 import { FacebookIcon } from "./icons/FacebookIcon";
 import { LinkedInIcon } from "./icons/LinkedIn";
 import { TwitterIcon } from "./icons/TwitterIcon";
+import { BiSolidLike } from "react-icons/bi";
 import axios from "axios";
 import { useState } from "react";
 
-function LikeShare({ isAuthenticated, setOpen, likes, postId, user, data }) {
+function LikeShare({ isAuthenticated, setOpen, likes, postData, user })  {
   const [like, setLikes] = useState(likes);
   const handleLike = async () => {
     try {
@@ -15,23 +15,18 @@ function LikeShare({ isAuthenticated, setOpen, likes, postId, user, data }) {
         setOpen(true);
         return;
       }
+      const data = { 
+        user_id: user?.id,
+        post_id: postData.id,
+        post_title: postData.title
+       }
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/posts/${postId}/likes`,
-        { user_id: user.id }
+        `${import.meta.env.VITE_API_URL}/posts/${postData.id}/likes`,
+        data
       );
       const status = res.data.status;
       if (status === "liked") setLikes((l) => l + 1);
       if (status === "unliked") setLikes((l) => Math.max(l - 1, 0));
-      const notificationType = status === "liked" ? "liked" : "unliked";
-      const message = `${notificationType} your article: ${data?.title}`;
-      await axios.post(`${import.meta.env.VITE_API_URL}/notifications`, {
-        type: notificationType,
-        target_type: "post",
-        recipient_id: data?.user?.id,
-        actor_id: user?.id,
-        target_id: postId,
-        message: message,
-      });
     } catch (error) {
       console.log(error);
     }
@@ -68,15 +63,15 @@ function LikeShare({ isAuthenticated, setOpen, likes, postId, user, data }) {
 
   return (
     <>
-      <div className="flex flex-col sm:flex-row gap-2 items-center justify-between mt-10 bg-gray-200 rounded-2xl px-5 py-3">
+      <div className="flex flex-col md:flex-row gap-3 items-center justify-between mt-10 bg-gray-200 rounded-2xl px-5 py-3">
         <Button
           onClick={handleLike}
-          className="w-full sm:w-34 sm:h-12 bg-white text-black border-1 rounded-3xl hover:bg-blue-300 cursor-pointer"
+          className="w-full h-12 md:max-w-34 md:h-12 bg-white text-black border-1 rounded-3xl hover:bg-blue-400 cursor-pointer"
         >
-          <CiFaceSmile />
-          {like}
+          <BiSolidLike className="size-6" />
+          <span className="text-lg">{like}</span>
         </Button>
-        <div className="w-full flex justify-between sm:justify-end items-center gap-3">
+        <div className="w-full flex justify-between md:justify-end items-center gap-3">
           <div>
             <Button
               onClick={handleCopyLink}

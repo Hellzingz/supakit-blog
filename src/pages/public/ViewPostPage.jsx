@@ -45,33 +45,35 @@ function ViewPostPage() {
       {/* Content */}
       <main className="flex flex-col gap-4">
         <img
-          className="rounded-xl w-[1200px] h-[587px]"
+          className="rounded-xl max-w-[1200px] max-h-[587px] px-2"
           src={data.image}
           alt={data.title}
         />
-        <div className="max-w-300 mt-5">
+        <div className="max-w-[1200px] mt-5">
           <div className="flex gap-3">
             <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2 cursor-pointer">
               {data.category}
             </button>
             <span>{formatDate(data.date)}</span>
           </div>
-          <div className="flex gap-5 items-start">
+          <div className="flex flex-col md:flex-row gap-5 items-start">
             <div className="mt-10 flex-1">
               <h1 className="text-4xl font-semibold">{data.title}</h1>
               <div className="markdown">
                 <ReactMarkdown>{data.content}</ReactMarkdown>
               </div>
               <p>{data.description}</p>
-              <div className="sm:hidden">
-                <PersonalCard data={data}/>
+              <div className="flex justify-center items-center w-full">
+                <div className=" w-full max-w-[300px] sm:hidden">
+                  <PersonalCard data={data} />
+                </div>
               </div>
+
               <LikeShare
                 isAuthenticated={isAuthenticated}
                 likes={likes}
                 user={user}
-                data={data}
-                postId={id}
+                postData={data}
                 setOpen={setOpen}
               />
               <CommentSection
@@ -82,7 +84,7 @@ function ViewPostPage() {
               />
             </div>
             <div className="hidden sm:block sticky top-0 self-start w-80">
-              <PersonalCard data={data}/>
+              <PersonalCard data={data} />
             </div>
           </div>
         </div>
