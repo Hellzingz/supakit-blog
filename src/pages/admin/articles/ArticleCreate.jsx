@@ -25,6 +25,7 @@ function ArticleCreate() {
     content: "",
     category_id: "",
     status_id: "",
+    user_id: state.user.id,
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,7 +86,7 @@ function ArticleCreate() {
     formData.append("description", post.description);
     formData.append("content", post.content);
     formData.append("status_id", statusId);
-    // formData.append("user_id", state.user.id);
+    formData.append("user_id", state.user.id);
     formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
 
     try {
@@ -96,14 +97,14 @@ function ArticleCreate() {
           Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
         },
       });
-      const notificationType = "Published";
-      const message = `${notificationType} new article.`;
-      await axios.post(`${import.meta.env.VITE_API_URL}/notifications`, {
-        type: notificationType,
-        target_type: "post",
-        actor_id: state.user.id,
-        message: message,
-      });
+      // const notificationType = "Published";
+      // const message = `${notificationType} new article.`;
+      // await axios.post(`${import.meta.env.VITE_API_URL}/notifications`, {
+      //   type: notificationType,
+      //   target_type: "post",
+      //   actor_id: state.user.id,
+      //   message: message,
+      // });
       toastSuccess("Created Successfully");
       navigate('/admin')
     } catch (error) {

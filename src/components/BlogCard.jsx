@@ -1,9 +1,9 @@
 import { formatDate } from "../utils/date";
 import { Link } from "react-router-dom";
+import { UserAvartar } from "./icons/UserAvartar";
 function BlogCard({ post }) {
-  const { image, category, title, description, author, date } = post;
+  const { image, category, title, description, date } = post;
   const formattedDate = formatDate(date);
-
   return (
     <>
         <div className="flex flex-col gap-4">
@@ -35,12 +35,18 @@ function BlogCard({ post }) {
               {description}
             </p>
             <div className="flex items-center text-sm">
-              <img
-                className="w-8 h-8 rounded-full mr-2"
-                src="https://res.cloudinary.com/dcbpjtd1r/image/upload/v1728449784/my-blog-post/xgfy0xnvyemkklcqodkg.jpg"
-                alt="Tomson P."
-              />
-              <span>{author}</span>
+              {post.user.profile_pic ? (
+                <img
+                  className="w-8 h-8 rounded-full mr-2"
+                  src={post.user.profile_pic}
+                  alt="author name"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full mr-2 bg-gray-200 flex items-center justify-center">
+                  <UserAvartar />
+                </div>
+              )}
+              <span>{post.user.name}</span>
               <span className="mx-2 text-gray-300">|</span>
               <span>{formattedDate}</span>
             </div>
