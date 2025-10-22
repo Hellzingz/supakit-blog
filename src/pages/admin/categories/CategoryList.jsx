@@ -15,11 +15,16 @@ import { TrashIcon } from "@/components/icons/TrashIcon";
 import { EditIcon } from "@/components/icons/EditIcon";
 import { toastSuccess } from "@/utils/toast";
 import { toastError } from "@/utils/toast";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { useState } from "react";
 
 function CategoryList() {
   const navigate = useNavigate()
 
   const { data: categories, fetchData } = useFetch(`${import.meta.env.VITE_API_URL}/categories`)
+
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [categoryId, setCategoryId] = useState("");
 
   const handleDelete = async(id)=>{
     try {
@@ -38,6 +43,11 @@ function CategoryList() {
 
     const handleCreate = () =>{
       navigate(`/admin/category/create`);
+    }
+
+    const handleDeleteClick = (id) => {
+      setShowConfirmModal(true);
+      setCategoryId(id);
     }
 
     return (
@@ -67,7 +77,7 @@ function CategoryList() {
                   <Button onClick={()=>handleEdit(category.id)} variant="ghost" size="sm">
                     <EditIcon />
                   </Button>
-                  <Button onClick={()=>handleDelete(category.id)} variant="ghost" size="sm">
+                  <Button onClick={()=>handleDeleteClick(category.id)} variant="ghost" size="sm">
                     <TrashIcon />
                   </Button>
                 </TableCell>
@@ -76,6 +86,15 @@ function CategoryList() {
             </TableBody>
           </Table>
         </div>
+        <ConfirmDialog
+          isOpen={showConfirmModal}
+          setIsOpen={setShowConfirmModal}
+          title="Delete category"
+          description="Do you want to delete this category?"
+          onConfirm={()=>handleDelete(categoryId)}
+          onCancel={()=>setShowConfirmModal(false)}
+          confirmText="Delete"
+        />
       </div>
     );
   }
