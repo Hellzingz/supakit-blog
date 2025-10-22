@@ -1,8 +1,7 @@
 import { UserAvartar } from "./icons/UserAvartar";
 function PersonalCard({ data }) {
-
   return (
-    <div className="sticky top-5 min-h-[376px] max-w-[343px] mt-10 bg-gray-100 rounded-xl flex flex-col border p-4">
+    <div className="sticky top-5 min-h-[376px] w-full mt-10 bg-gray-100 rounded-xl flex flex-col border p-4">
       <div className="flex">
         <div className="flex gap-3 items-center">
           {data?.user?.profile_pic ? (

@@ -138,7 +138,7 @@ function ArticleEdit() {
 
   return (
     <div className="flex w-full h-screen bg-gray-100">
-      <main className="flex-1 py-5 px-4 md:px-10 bg-gray-50 overflow-auto">
+      <main className="flex-1 py-5 px-4 md:px-10 bg-white overflow-auto">
         <div className="w-full flex justify-between items-center border-b py-4 md:py-10 mb-6">
           <h2 className="text-2xl font-semibold">
             Edit article {id ? `#${id}` : ""}
@@ -224,7 +224,7 @@ function ArticleEdit() {
             <label htmlFor="author">Author name</label>
             <Input
               id="author"
-              defaultValue="Thompson P."
+              defaultValue={post?.user?.name}
               className="mt-1 max-w-lg"
               disabled
             />
