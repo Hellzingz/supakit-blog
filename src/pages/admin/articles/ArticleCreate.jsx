@@ -14,11 +14,15 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
+import PropagateLoader from "react-spinners/PropagateLoader";
+import useFetch from "@/hooks/useFetch";
 
 function ArticleCreate() {
-  const {state} = useAuth()
+  const { state } = useAuth();
 
-  
+  const { data: categories } = useFetch(
+    `${import.meta.env.VITE_API_URL}/categories`
+  );
   const [post, setPost] = useState({
     title: "",
     description: "",
@@ -29,13 +33,10 @@ function ArticleCreate() {
   });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
-  // ฟังก์ชันสำหรับจัดการเมื่อมีการเลือกไฟล์
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-
-    // ตรวจสอบประเภทของไฟล์
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (!file) {
@@ -47,18 +48,15 @@ function ArticleCreate() {
       return;
     }
 
-    // ตรวจสอบขนาดของไฟล์ (เช่น ขนาดไม่เกิน 5MB)
     const maxSize = 5 * 1024 * 1024; // 5MB
     if (file.size > maxSize) {
       alert("The file is too large. Please upload an image smaller than 5MB.");
       return;
     }
 
-    // เก็บข้อมูลไฟล์
     setImageFile({ file });
   };
 
-  // ฟังก์ชันสำหรับจัดการเมื่อมีการเปลี่ยนแปลงค่าใน input fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPost((prevData) => ({
@@ -67,7 +65,6 @@ function ArticleCreate() {
     }));
   };
 
-  // ฟังก์ชันสำหรับการบันทึกข้อมูลโพสต์
   const handleSave = async (statusId) => {
     if (!imageFile) {
       alert("Please select an image file.");
@@ -75,38 +72,25 @@ function ArticleCreate() {
     }
     setIsLoading(true);
 
-    
-
-    // สร้าง FormData สำหรับการส่งข้อมูลแบบ multipart/form-data
     const formData = new FormData();
 
-    // เพิ่มข้อมูลทั้งหมดลงใน FormData
     formData.append("title", post.title);
     formData.append("category_id", post.category_id);
     formData.append("description", post.description);
     formData.append("content", post.content);
     formData.append("status_id", statusId);
     formData.append("user_id", state.user.id);
-    formData.append("imageFile", imageFile.file); // เพิ่มไฟล์รูปภาพ
+    formData.append("imageFile", imageFile.file);
 
     try {
-      // ส่งข้อมูลไปยัง Backend
       await axios.post(`${import.meta.env.VITE_API_URL}/posts/`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
-      // const notificationType = "Published";
-      // const message = `${notificationType} new article.`;
-      // await axios.post(`${import.meta.env.VITE_API_URL}/notifications`, {
-      //   type: notificationType,
-      //   target_type: "post",
-      //   actor_id: state.user.id,
-      //   message: message,
-      // });
       toastSuccess("Created Successfully");
-      navigate('/admin')
+      navigate("/admin");
     } catch (error) {
       console.error("Error creating post:", error);
       toastError("Create Failed");
@@ -114,9 +98,19 @@ function ArticleCreate() {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="flex w-full mx-auto h-screen bg-gray-100">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-transparent"></div>
+          <div className="relative p-8 flex flex-col items-center gap-10">
+            <PropagateLoader color="#000000" size={30} />
+            <p className="text-gray-800 font-medium">
+              Saving article<span className="text-xl animate-pulse">...</span>
+            </p>
+          </div>
+        </div>
+      )}
       <main className="flex-1 px-4 sm:px-10 bg-white overflow-auto">
         <div className="flex justify-between items-center border-b py-4 sm:py-10 mb-6">
           <h2 className="text-2xl font-semibold">Create article</h2>
@@ -165,7 +159,7 @@ function ArticleCreate() {
                 htmlFor="file-upload"
                 className="px-8 text-center w-auto py-2 bg-background rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
               >
-                <span>Upload thumbnail image</span>
+                <span>Upload image</span>
                 <input
                   id="file-upload"
                   name="file-upload"
@@ -183,14 +177,22 @@ function ArticleCreate() {
               onValueChange={(value) =>
                 setPost({ ...post, category_id: Number(value) })
               }
+              value={
+                (Array.isArray(categories) &&
+                  categories?.find((cat) => cat.id === post.category_id)?.id) ||
+                ""
+              }
             >
               <SelectTrigger className="max-w-lg mt-1 py-3 rounded-sm text-muted-foreground focus:ring-0 focus:ring-offset-0 focus:border-muted-foreground">
                 <SelectValue placeholder="Select category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Cat</SelectItem>
-                <SelectItem value="3">General</SelectItem>
-                <SelectItem value="2">Inspiration</SelectItem>
+                {Array.isArray(categories) &&
+                  categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>

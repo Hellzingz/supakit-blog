@@ -14,76 +14,76 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import axios from "axios";
 import useFetch from "@/hooks/useFetch";
-import ConfirmModal from "@/components/ConfirmModal";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import PropagateLoader from "react-spinners/PropagateLoader";
 
 function ArticleEdit() {
   const { id } = useParams();
-  const [post, setPost] = useState({
-    title: "",
-    description: "",
-    content: "",
-    category_id: null,
-    status_id: null,
-  });
   const [imageFile, setImageFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [post, setPost] = useState({
+    image: "",
+    title: "",
+    description: "",
+    content: "",
+    category_id: "",
+    status_id: "",
+    user_id: "",
+  });
+
+  const { data: categories } = useFetch(
+    `${import.meta.env.VITE_API_URL}/categories`
+  );
 
   const handleDeleteClick = async () => {
     try {
+      setIsLoading(true);
       await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
       toastSuccess("Deleted Successfully");
       navigate("/admin/articles");
     } catch (error) {
       console.error("Error deleting post:", error);
       toastError("Deleted Failed");
+    } finally {
+      setIsLoading(false);
     }
   };
 
-
-  // Get post data using useFetch
   const { data: postData } = useFetch(
     `${import.meta.env.VITE_API_URL}/posts/${id}`
   );
 
-  // Update post state when data is fetched
   useEffect(() => {
     if (postData) {
-      setPost(postData);
+      setPost({
+        title: postData?.title || "",
+        description: postData?.description || "",
+        content: postData?.content || "",
+        category_id: postData?.category?.id || "",
+        status_id: postData?.status?.id || "",
+        user_id: postData?.user?.id || "",
+      });
     }
   }, [postData]);
 
-  console.log(post);
 
-  // ฟังก์ชันสำหรับจัดการเมื่อมีการเลือกไฟล์
   const handleFileChange = (event) => {
     const file = event.target.files[0];
-
-    // ตรวจสอบประเภทของไฟล์
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
-
-    if (!file) {
-      return;
-    }
-
     if (!allowedTypes.includes(file.type)) {
       alert("Please upload a valid image file (JPEG, PNG, GIF, WebP).");
       return;
     }
-
-    // ตรวจสอบขนาดของไฟล์ (เช่น ขนาดไม่เกิน 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       alert("The file is too large. Please upload an image smaller than 5MB.");
       return;
     }
 
-    // เก็บข้อมูลไฟล์
     setImageFile({ file });
   };
-
-  // ฟังก์ชันสำหรับจัดการเมื่อมีการเปลี่ยนแปลงค่าใน input fields
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setPost((prevData) => ({
@@ -92,42 +92,33 @@ function ArticleEdit() {
     }));
   };
 
-  // ฟังก์ชันสำหรับการบันทึกข้อมูลโพสต์
   const handleSave = async (statusId) => {
-    // ตรวจสอบว่ามีรูปใหม่หรือรูปเดิม (ไม่นับ empty string)
-    if (!imageFile && (!post.image || post.image.trim() === "")) {
-      alert("Please select an image file.");
-      return;
-    }
     setIsLoading(true);
 
-    // สร้าง FormData สำหรับการส่งข้อมูลแบบ multipart/form-data
     const formData = new FormData();
 
-    // เพิ่มข้อมูลทั้งหมดลงใน FormData
     formData.append("title", post.title);
+    formData.append("user_id", postData?.user?.id || post.user_id);
     formData.append("category_id", post.category_id);
     formData.append("description", post.description);
     formData.append("content", post.content);
     formData.append("status_id", statusId);
-    // ส่งรูปใหม่ถ้ามี ถ้าไม่มีใช้รูปเดิม
+
     if (imageFile) {
       formData.append("imageFile", imageFile.file);
+    } else if (postData?.image && postData.image.trim() !== "") {
+      formData.append("image", postData.image);
     }
-    if (post.image && post.image.trim() !== "") {
-      formData.append("image", post.image); // ใช้รูปเดิมถ้ามี
-    }
-    // ถ้าไม่มีรูปเลย ไม่ต้อง append image field
 
     try {
-      // ส่งข้อมูลไปยัง Backend
       await axios.put(`${import.meta.env.VITE_API_URL}/posts/${id}`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${localStorage.getItem("token")}`, // ถ้ามีการใช้ token สำหรับการยืนยันตัวตน
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
       });
       toastSuccess("Edited Successfully");
+      navigate("/admin/articles");
     } catch (error) {
       console.error("Error edited post:", error);
       toastError("Edited Failed");
@@ -135,9 +126,19 @@ function ArticleEdit() {
       setIsLoading(false);
     }
   };
-
   return (
     <div className="flex w-full h-screen bg-gray-100">
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-transparent"></div>
+          <div className="relative p-8 flex flex-col items-center gap-10">
+            <PropagateLoader color="#000000" size={30} />
+            <p className="text-gray-800 font-medium">
+              Saving article<span className="text-xl animate-pulse">...</span>
+            </p>
+          </div>
+        </div>
+      )}
       <main className="flex-1 py-5 px-4 md:px-10 bg-white overflow-auto">
         <div className="w-full flex justify-between items-center border-b py-4 md:py-10 mb-6">
           <h2 className="text-2xl font-semibold">
@@ -180,8 +181,13 @@ function ArticleEdit() {
                       className="max-w-full max-h-48 object-contain"
                     />
                   ) : (
-
-                    <img className="max-w-full max-h-48 object-contain" src={post.image} />
+                    postData.image && (
+                      <img
+                        className="max-w-full max-h-48 object-contain"
+                        src={postData.image}
+                        alt="Article thumbnail"
+                      />
+                    )
                   )}
                 </div>
               </div>
@@ -189,7 +195,7 @@ function ArticleEdit() {
                 htmlFor="file-upload"
                 className="px-8 py-2 bg-background rounded-full text-foreground border border-foreground hover:border-muted-foreground hover:text-muted-foreground transition-colors cursor-pointer"
               >
-                <span>Upload thumbnail image</span>
+                <span>Upload image</span>
                 <input
                   id="file-upload"
                   name="file-upload"
@@ -208,14 +214,22 @@ function ArticleEdit() {
               onValueChange={(value) =>
                 setPost({ ...post, category_id: Number(value) })
               }
+              value={
+                (Array.isArray(categories) &&
+                  categories?.find((cat) => cat.id === post.category_id)?.id) ||
+                ""
+              }
             >
               <SelectTrigger className="max-w-lg mt-1 py-3 rounded-sm text-muted-foreground focus:ring-0 focus:ring-offset-0 focus:border-muted-foreground">
-                <SelectValue placeholder={post?.category} />
+                <SelectValue placeholder="Select category"></SelectValue>
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="1">Cat</SelectItem>
-                <SelectItem value="2">General</SelectItem>
-                <SelectItem value="3">Inspiration</SelectItem>
+                {Array.isArray(categories) &&
+                  categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
               </SelectContent>
             </Select>
           </div>
@@ -224,7 +238,7 @@ function ArticleEdit() {
             <label htmlFor="author">Author name</label>
             <Input
               id="author"
-              defaultValue={post?.user?.name}
+              defaultValue={postData?.user?.name}
               className="mt-1 max-w-lg"
               disabled
             />
@@ -269,19 +283,22 @@ function ArticleEdit() {
             />
           </div>
         </form>
-        <button 
-        onClick={() => setShowConfirmModal(true)}
-        className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium flex items-center gap-1 mt-4">
+        <button
+          onClick={() => setShowConfirmModal(true)}
+          className="underline underline-offset-2 hover:text-muted-foreground text-sm font-medium flex items-center gap-1 mt-4"
+        >
           <Trash2 className="h-5 w-5" />
           Delete article
         </button>
       </main>
       {showConfirmModal && (
-        <ConfirmModal
+        <ConfirmDialog
           title="Delete Article"
           description="Are you sure you want to delete this article?"
           onCancel={() => setShowConfirmModal(false)}
           onConfirm={() => handleDeleteClick(id)}
+          isOpen={showConfirmModal}
+          setIsOpen={setShowConfirmModal}
         />
       )}
     </div>

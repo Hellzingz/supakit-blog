@@ -15,11 +15,10 @@ function ViewPostPage() {
   const { isAuthenticated, state } = useAuth();
   const { id } = useParams();
   const user = state.user;
-
   const { data, isLoading, error } = useFetch(
     `${import.meta.env.VITE_API_URL}/posts/${id}`
   );
-  const likes = data.likes_count;
+  const likes = data?.likes_count;
   if (isLoading) {
     return (
       <section className="mx-auto px-5 mt-5">
@@ -45,14 +44,14 @@ function ViewPostPage() {
       {/* Content */}
       <main className="flex flex-col gap-4">
         <img
-          className="rounded-xl max-w-[1200px] max-h-[587px] px-2"
+          className="w-full rounded-xl max-w-[1200px] max-h-[587px] px-2"
           src={data.image}
           alt={data.title}
         />
         <div className="max-w-[1200px] mt-5">
           <div className="flex gap-3">
             <button className="bg-green-200 rounded-full px-3 py-1 text-sm font-semibold text-green-600 mb-2 cursor-pointer">
-              {data.category}
+              {data?.category?.name}
             </button>
             <span>{formatDate(data.date)}</span>
           </div>
@@ -68,7 +67,6 @@ function ViewPostPage() {
                   <PersonalCard data={data} />
                 </div>
               </div>
-
               <LikeShare
                 isAuthenticated={isAuthenticated}
                 likes={likes}
@@ -79,6 +77,7 @@ function ViewPostPage() {
               <CommentSection
                 isAuthenticated={isAuthenticated}
                 setOpen={setOpen}
+                postId={id}
                 user={user}
                 postData={data}
               />

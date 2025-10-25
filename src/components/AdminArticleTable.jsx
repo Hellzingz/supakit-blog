@@ -1,11 +1,25 @@
-import { Table, TableHeader, TableBody, TableRow, TableCell, TableHead } from "@/components/ui/table";
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableCell,
+  TableHead,
+} from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { EditIcon } from "@/components/icons/EditIcon";
 import { TrashIcon } from "@/components/icons/TrashIcon";
 import { ImSpinner2 } from "react-icons/im";
 import Pagination from "@/components/Pagination";
 
-    function AdminArticleTable({ data, isLoading, handleEdit, handleDeleteClick ,setPage}) {
+function AdminArticleTable({
+  data,
+  isLoading,
+  handleEdit,
+  handleDeleteClick,
+  setPage,
+  page,
+}) {
   return (
     <div>
       {isLoading ? (
@@ -67,7 +81,7 @@ import Pagination from "@/components/Pagination";
               ) : (
                 <TableBody>
                   <TableRow>
-                    <TableCell colSpan={4} className="text-center">
+                    <TableCell colSpan={4} className="text-center py-20">
                       No articles found
                     </TableCell>
                   </TableRow>
@@ -77,9 +91,13 @@ import Pagination from "@/components/Pagination";
           </div>
         </>
       )}
-            <div className="w-full sm:fixed bottom-0 left-0 right-0">
-        <div className="w-full flex justify-center sm:justify-end items-center px-15 mb-5">
-          <Pagination totalPages={10} page={9} setPage={setPage} />
+      <div className="w-full sm:fixed bottom-0 left-0 right-0">
+        <div className="w-full flex justify-center items-center px-15 mb-5">
+          <Pagination
+            totalPages={data?.totalPages}
+            currentPage={page}
+            onPageChange={setPage}
+          />
         </div>
       </div>
     </div>

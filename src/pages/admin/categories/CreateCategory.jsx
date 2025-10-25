@@ -5,24 +5,28 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { toastSuccess } from "@/utils/toast";
 import { toastError } from "@/utils/toast";
+import { PropagateLoader } from "react-spinners";
 
 function CreateCategory() {
   const [categoryName, setCategoryName] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const handleCreate = async () => {
-    try{
-        setIsLoading(true);
-        await axios.post(`${import.meta.env.VITE_API_URL}/categories`, {
-            name: categoryName
-        });
-        toastSuccess("Create category", "Category has been successfully created.");
-        navigate("/admin/category");
-        setIsLoading(false);
-    }catch(error){
-        console.error("Error creating category:", error);
-        toastError("Create category", "Category has been failed to create.");
-        setIsLoading(false);
+    try {
+      setIsLoading(true);
+      await axios.post(`${import.meta.env.VITE_API_URL}/categories`, {
+        name: categoryName,
+      });
+      toastSuccess(
+        "Create category",
+        "Category has been successfully created."
+      );
+      setIsLoading(false);
+      navigate("/admin/category");
+    } catch (error) {
+      console.error("Error creating category:", error);
+      toastError("Create category", "Category has been failed to create.");
+      setIsLoading(false);
     }
   };
   return (
@@ -42,14 +46,25 @@ function CreateCategory() {
           <label htmlFor="categoryName" className="text-md font-medium">
             Category Name
           </label>
-          <Input 
-          placeholder="Category Name" 
-          className="max-w-[480px]" 
-          value={categoryName}
-          onChange={(e) => setCategoryName(e.target.value)}
+          <Input
+            placeholder="Category Name"
+            className="max-w-[480px]"
+            value={categoryName}
+            onChange={(e) => setCategoryName(e.target.value)}
           />
         </div>
       </div>
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-transparent"></div>
+          <div className="relative p-8 flex flex-col items-center gap-10">
+            <PropagateLoader color="#000000" size={30} />
+            <p className="text-gray-800 font-medium">
+              Creating category<span className="text-xl animate-pulse">...</span>
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

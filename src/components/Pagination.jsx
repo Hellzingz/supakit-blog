@@ -1,77 +1,58 @@
-import { FaFastForward, FaFastBackward } from "react-icons/fa";
+import { IoCaretBack, IoCaretForward } from "react-icons/io5";
+import { IoIosSkipForward, IoIosSkipBackward } from "react-icons/io";
 
-const Pagination = ({ totalPages, page, setPage }) => {
-  if (totalPages > 6)
-    return (
-      <div className="flex gap-2">
-        <button
-          className="px-5 py-1 cursor-pointer"
-          onClick={() => setPage(1)}
-          disabled={page === 1}
-        >
-          1
-        </button>
-        <button>...</button>
-        <div className="flex gap-4">
-          {page - 1 > 1 && (
-            <button onClick={() => setPage(page - 1)} disabled={page === 1}>
-              {page - 1}
-            </button>
-          )}
-          <button onClick={() => setPage(page)} disabled={page === page}>
-            {page}
-          </button>
-          {page + 1 === totalPages ? (
-            <button
-              onClick={() => setPage(page + 1)}
-              disabled={page === page + 1}
-            >
-              {page + 1}
-            </button>
-          ):null}
-        </div>
+const Pagination = ({ totalPages, currentPage, onPageChange }) => {
+  const isFirstPage = currentPage === 1;
+  const isLastPage = currentPage === totalPages;
 
-        {page + 1 < totalPages && (
-          <button>...</button>
-        )}
-        <button
-          className="px-5 py-1 cursor-pointer"
-          onClick={() => setPage(totalPages)}
-          disabled={page === totalPages}
-        >
-          {totalPages}
-        </button>
-      </div>
-    );
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center">
       <button
-        className="px-5 py-1 cursor-pointer"
-        onClick={() => setPage(1)}
-        disabled={page === 1}
+        className={`rounded-full p-1 ${
+          isFirstPage
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer"
+        }`}
+        onClick={() => !isFirstPage && onPageChange(1)}
+        disabled={isFirstPage}
       >
-        <FaFastBackward />
+        <IoIosSkipBackward size={20} />
       </button>
-      {Array.from({ length: totalPages }).map((_, index) => (
-        <button
-          className={`w-10 h-10 rounded-full cursor-pointer ${
-            page === index + 1
-              ? "bg-gray-300 text-white"
-              : "bg-primary text-white"
-          }`}
-          disabled={page === index + 1}
-          key={index}
-          onClick={() => setPage(index + 1)}
-        >
-          {index + 1}
-        </button>
-      ))}
       <button
-        className="px-5 py-1 cursor-pointer"
-        onClick={() => setPage(totalPages)}
-        disabled={page === totalPages}
+        className={`rounded-full p-1 ${
+          isFirstPage
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer"
+        }`}
+        onClick={() => !isFirstPage && onPageChange(currentPage - 1)}
+        disabled={isFirstPage}
       >
-        <FaFastForward />
+        <IoCaretBack size={20} />
+      </button>
+      <p className="text-sm text-black font-medium">
+        {currentPage} of {totalPages}
+      </p>
+      <button
+        className={`rounded-full p-1 ${
+          isLastPage
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer"
+        }`}
+        onClick={() => !isLastPage && onPageChange(currentPage + 1)}
+        disabled={isLastPage}
+      >
+        <IoCaretForward size={20} />
+      </button>
+      <button
+        className={`rounded-full p-1 ${
+          isLastPage
+            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+            : "bg-gray-200 hover:bg-gray-300 text-gray-700 cursor-pointer"
+        }`}
+        onClick={() => !isLastPage && onPageChange(totalPages)}
+        disabled={isLastPage}
+      >
+        <IoIosSkipForward size={20} />
       </button>
     </div>
   );

@@ -3,10 +3,16 @@ import { IoMdHome } from "react-icons/io";
 import { IoLogOut } from "react-icons/io5";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
-
+import { useNavigate } from "react-router-dom";
+import { Avatar } from "./ui/avatar";
 function AdminSidebar() {
   const location = useLocation();
-  const { state } = useAuth();
+  const { state, logout } = useAuth();
+  const navigate = useNavigate();
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
 
 
   return (
@@ -30,6 +36,7 @@ function AdminSidebar() {
         <Link
           to="/"
           className="flex items-center px-4 py-2 text-gray-600 rounded hover:bg-gray-100"
+          onClick={handleLogout}
         >
           <IoMdHome className="mr-2 h-5 w-5" />
           <span>Home</span>
@@ -45,13 +52,23 @@ function AdminSidebar() {
 
       {/* Desktop layout - like UserSideBar (sm: and up) */}
       <nav className="hidden sm:flex sm:flex-col w-full gap-5 justify-between sm:h-full">
-        <h1 className="text-xl font-semibold text-center text-orange-400">Admin Panel</h1>
+        <h1 className="text-xl font-semibold text-center text-orange-400">
+          Admin Panel
+        </h1>
         <div className="hidden sm:flex justify-center items-center gap-2">
-          <img
-            src={state.user.profilePic}
-            alt=""
-            className="w-10 h-10 rounded-full bg-gray-200 flex items-center justify-center"
-          />
+          <Avatar className="w-10 h-10 rounded-full">
+            {state.user.profilePic ? (
+              <img
+                src={state.user.profilePic}
+                alt="profile-pic"
+                className="object-cover rounded-full"
+              />
+            ) : (
+              <span className="text-gray-500 text-xl font-semibold">
+                {state.user.name.charAt(0)}
+              </span>
+            )}
+          </Avatar>
           <p className="text-sm font-medium">{state.user.username}</p>
         </div>
 
@@ -75,18 +92,18 @@ function AdminSidebar() {
           <div className="flex flex-row sm:flex-col">
             <Link
               to="/"
-              className="w-full flex items-center gap-2 p-2 text-gray-600 rounded hover:bg-gray-200"
+              className="w-full flex items-center gap-2 p-2 text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
             >
               <IoMdHome className="h-5 w-5" />
               <span className="flex-1">Home page</span>
             </Link>
-            <Link
-              to="/"
-              className="w-full flex items-center gap-2 p-2 text-gray-600 rounded hover:bg-gray-200"
+            <div
+              className="w-full flex items-center gap-2 p-2 text-gray-600 rounded hover:bg-gray-200 cursor-pointer"
+              onClick={handleLogout}
             >
               <IoLogOut className="h-5 w-5" />
               <span className="flex-1">Log out</span>
-            </Link>
+            </div>
           </div>
         </div>
       </nav>

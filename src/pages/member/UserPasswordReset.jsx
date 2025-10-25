@@ -1,4 +1,4 @@
-import UserResetPassword from "@/components/user/๊UserResetPassword";
+import UserResetPassword from "@/components/user/UserResetPassword";
 
 function UserPasswordReset() {
   return (

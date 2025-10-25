@@ -7,15 +7,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
-import ConfirmModal from "@/components/ConfirmModal";
 import { toastSuccess } from "@/utils/toast";
 import AdminArticleTable from "@/components/AdminArticleTable";
-import Pagination from "@/components/Pagination";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { ImSpinner2 } from "react-icons/im";
+
 const statusData = [
   { id: 2, name: "Publish" },
   { id: 1, name: "Draft" },
@@ -29,8 +29,8 @@ function ArticleList() {
   const [status, setStatus] = useState("");
 
   const navigate = useNavigate();
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [articleId, setArticleId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const limit = 10;
 
@@ -43,8 +43,6 @@ function ArticleList() {
   const url = `${import.meta.env.VITE_API_URL}/posts?${params.toString()}`;
 
   const { data, isLoading, fetchData } = useFetch(url);
-
-  const totalPages = data?.totalPages || 1;
 
   const { data: categories } = useFetch(
     `${import.meta.env.VITE_API_URL}/categories`
@@ -59,15 +57,22 @@ function ArticleList() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
-    setShowConfirmModal(false);
-    setArticleId(null);
-    fetchData();
-    toastSuccess("Post deleted successfully");
+    try {
+      setIsDeleting(true);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
+      setIsDeleting(false);
+      setArticleId(null);
+      fetchData();
+      toastSuccess("Post deleted successfully");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleDeleteClick = (id) => {
-    setShowConfirmModal(true);
+    setIsDeleting(true);
     setArticleId(id);
   };
 
@@ -87,20 +92,21 @@ function ArticleList() {
       <div className="flex flex-col md:flex-row gap-5 md:gap-2 px-2 md:px-10 justify-between">
         <Input
           placeholder="Search"
-          className="w-full md:max-w-75"
+          className="w-full md:w-50"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
         <div className="flex gap-2">
           {/* Status filter dropdown */}
           <Select onValueChange={(value) => setStatus(value)}>
-            <SelectTrigger className="w-full md:max-w-40">
+            <SelectTrigger className="w-full md:w-40 cursor-pointer">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all" className="text-muted-foreground cursor-pointer">All status</SelectItem>
               {Array.isArray(statusData) &&
                 statusData.map((status) => (
-                  <SelectItem key={status.id} value={status.id}>
+                  <SelectItem className="cursor-pointer" key={status.id} value={status.id.toString()}>
                     {status.name}
                   </SelectItem>
                 ))}
@@ -108,13 +114,14 @@ function ArticleList() {
           </Select>
           {/* Category filter dropdown */}
           <Select onValueChange={(value) => setCategory(value)}>
-            <SelectTrigger className="w-full md:max-w-40">
+            <SelectTrigger className="w-full md:w-40 cursor-pointer">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
+              <SelectItem value="all" className="text-muted-foreground cursor-pointer">All categories</SelectItem>
               {Array.isArray(categories) &&
                 categories.map((category) => (
-                  <SelectItem key={category.id} value={category.id.toString()}>
+                  <SelectItem className="cursor-pointer" key={category.id} value={category.id.toString()}>
                     {category.name}
                   </SelectItem>
                 ))}
@@ -129,13 +136,16 @@ function ArticleList() {
         handleEdit={handleEdit}
         handleDeleteClick={handleDeleteClick}
         setPage={setPage}
+        page={page}
       />
-      {showConfirmModal && (
-        <ConfirmModal
+      {isDeleting && (
+        <ConfirmDialog
           title="Delete Article"
           description="Are you sure you want to delete this article?"
-          onCancel={() => setShowConfirmModal(false)}
+          onCancel={() => setIsDeleting(false)}
           onConfirm={() => handleDelete(articleId)}
+          isOpen={isDeleting}
+          setIsOpen={setIsDeleting}
         />
       )}
     </div>

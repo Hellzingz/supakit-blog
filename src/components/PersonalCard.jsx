@@ -1,19 +1,23 @@
-import { UserAvartar } from "./icons/UserAvartar";
+import { Avatar } from "./ui/avatar";
 function PersonalCard({ data }) {
   return (
     <div className="sticky top-5 min-h-[376px] w-full mt-10 bg-gray-100 rounded-xl flex flex-col border p-4">
       <div className="flex">
         <div className="flex gap-3 items-center">
           {data?.user?.profile_pic ? (
-            <img
+            <Avatar className="w-20 h-20 rounded-full">
+              <img
               src={data?.user?.profile_pic}
-              className="rounded-full size-20"
-              alt="Profile"
-            />
+                className="object-cover rounded-full"
+                alt="Profile"
+              />
+            </Avatar>
           ) : (
-            <div className="rounded-full size-20 bg-gray-200 flex items-center justify-center">
-              <UserAvartar />
-            </div>
+            <Avatar className="w-20 h-20 rounded-full">
+              <span className="text-gray-500 text-xl font-semibold">
+                {data?.user?.name.charAt(0)}
+              </span>
+            </Avatar>
           )}
           <div className="flex flex-col gap-3">
             <p className="text-sm  text-gray-400">Author</p>

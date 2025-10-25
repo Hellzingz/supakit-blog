@@ -7,19 +7,21 @@ import { BiSolidLike } from "react-icons/bi";
 import axios from "axios";
 import { useState } from "react";
 
-function LikeShare({ isAuthenticated, setOpen, likes, postData, user })  {
+function LikeShare({ isAuthenticated, setOpen, likes, postData, user }) {
   const [like, setLikes] = useState(likes);
+  const [isLoading, setIsLoading] = useState(false);
   const handleLike = async () => {
     try {
       if (!isAuthenticated) {
         setOpen(true);
         return;
       }
-      const data = { 
+      setIsLoading(true);
+      const data = {
         user_id: user?.id,
         post_id: postData.id,
-        post_title: postData.title
-       }
+        post_title: postData.title,
+      };
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/posts/${postData.id}/likes`,
         data
@@ -27,7 +29,9 @@ function LikeShare({ isAuthenticated, setOpen, likes, postData, user })  {
       const status = res.data.status;
       if (status === "liked") setLikes((l) => l + 1);
       if (status === "unliked") setLikes((l) => Math.max(l - 1, 0));
+      setIsLoading(false);
     } catch (error) {
+      setIsLoading(false);
       console.log(error);
     }
   };
@@ -65,6 +69,7 @@ function LikeShare({ isAuthenticated, setOpen, likes, postData, user })  {
     <>
       <div className="flex flex-col md:flex-row gap-3 items-center justify-between mt-10 bg-gray-200 rounded-2xl px-5 py-3">
         <Button
+          disabled={user?.id === postData?.user?.id || isLoading}
           onClick={handleLike}
           className="w-full h-12 md:max-w-34 md:h-12 bg-white text-black border-1 rounded-3xl hover:bg-blue-400 cursor-pointer"
         >

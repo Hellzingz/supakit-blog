@@ -101,20 +101,12 @@ function AuthProvider(props) {
       );
       console.log("Register success:", response.data);
       setState((prevState) => ({ ...prevState, loading: false, error: null }));
-      navigate("/login");
+      toastSuccess("Registration successful");
       return { success: true };
     } catch (error) {
-      console.error("Register error:", {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-      });
-      setState((prevState) => ({
-        ...prevState,
-        loading: false,
-        error: error.response?.data?.message || error.response?.data?.error || "Registration failed",
-      }));
-      return { error: error.response?.data?.message || error.response?.data?.error || "Registration failed" };
+      console.log(error);
+      setState((prevState) => ({ ...prevState, loading: false }));
+      throw new Error(error.response?.data?.error || "Registration failed");
     }
   };
 
