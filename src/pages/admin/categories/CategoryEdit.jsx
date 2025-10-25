@@ -1,52 +1,53 @@
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { useState, useEffect } from "react"
-import { useParams, useNavigate } from "react-router-dom"
-import axios from "axios"
-import { toastSuccess, toastError } from "@/utils/toast"
-import useFetch from "@/hooks/useFetch"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import axios from "axios";
+import { toastSuccess, toastError } from "@/utils/toast";
+import useFetch from "@/hooks/useFetch";
+import { PropagateLoader } from "react-spinners";
 
 function CategoryEdit() {
-  const { id } = useParams()
-  const navigate = useNavigate()
-  const [category, setCategory] = useState({name: ''})
-  const [isLoading, setIsLoading] = useState(false)
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [category, setCategory] = useState({ id: "", name: "" });
+  const [isLoading, setIsLoading] = useState(false);
 
-  const { data: categoryData } = useFetch(`${import.meta.env.VITE_API_URL}/categories/${id}`)
+  const { data: categoryData } = useFetch(
+    `${import.meta.env.VITE_API_URL}/categories/${id}`
+  );
   useEffect(() => {
     if (categoryData) {
-      setCategory(categoryData)
+      setCategory(categoryData);
     }
-  }, [categoryData])
+  }, [categoryData]);
 
-  console.log(category);
-  
   const handleSave = async () => {
     if (!category.name.trim()) {
-      toastError("Category name is required")
-      return
+      toastError("Category name is required");
+      return;
     }
 
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await axios.put(`${import.meta.env.VITE_API_URL}/categories/${id}`, {
-        name: category.name
-      })
-      toastSuccess("Category updated successfully")
-      navigate("/admin/category")
+        name: category.name,
+      });
+      toastSuccess("Category updated successfully");
+      navigate("/admin/category");
     } catch (error) {
-      console.error("Error updating category:", error)
-      toastError("Failed to update category")
+      console.error("Error updating category:", error);
+      toastError("Failed to update category");
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   return (
     <div className="w-full">
       <div className="flex justify-between items-center p-4 md:p-10 mb-6 border-b">
         <h2 className="text-2xl font-semibold">Edit Category</h2>
-        <Button 
+        <Button
           className="px-4 md:px-8 py-2 rounded-full cursor-pointer"
           onClick={handleSave}
           disabled={isLoading}
@@ -56,20 +57,35 @@ function CategoryEdit() {
       </div>
       <div className="p-4 md:p-10">
         <div className="max-w-md">
-          <label htmlFor="categoryName" className="block text-sm font-medium mb-2">
+          <label
+            htmlFor="categoryName"
+            className="block text-sm font-medium mb-2"
+          >
             Category Name
           </label>
           <Input
             id="categoryName"
-            value={category.name}
+            value={category.name || ""}
             onChange={(e) => setCategory({ ...category, name: e.target.value })}
             placeholder="Enter category name"
             className="w-full"
           />
         </div>
       </div>
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-transparent"></div>
+          <div className="relative p-8 flex flex-col items-center gap-10">
+            <PropagateLoader color="#000000" size={30} />
+            <p className="text-gray-800 font-medium">
+              Updating category
+              <span className="text-xl animate-pulse">...</span>
+            </p>
+          </div>
+        </div>
+      )}
     </div>
-  )
+  );
 }
 
-export default CategoryEdit
+export default CategoryEdit;

@@ -1,4 +1,3 @@
-import React from "react";
 import Logo from "../assets/img/logo.png";
 import { useToggle } from "../hooks/useToggle";
 import { useOutsideClick } from "../hooks/useOutsideClick";
@@ -17,7 +16,7 @@ export function NavBar() {
     if (toggle) {
       changeToggle();
     }
-  }, toggle);
+  }, true);
 
   return (
     <div className="w-full bg-white sm:border-b border-gray-200 py-4 sm:px-10 md:px-20">
@@ -62,7 +61,7 @@ export function NavBar() {
           ref={dropdownRef}
           className="w-full bg-white sm:absolute sm:max-w-[210px] sm:border sm:border-gray-200 sm:shadow-md sm:rounded-md sm:top-18 sm:right-30"
         >
-          <NavbarDropdown isAuthenticated={isAuthenticated} state={state} />
+          <NavbarDropdown isAuthenticated={isAuthenticated} state={state} setToggle={changeToggle} openMenu={changeToggle}/>
         </div>
       )}
       {toggle && !isAuthenticated && (

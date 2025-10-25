@@ -21,12 +21,14 @@ function ArticleSection() {
   const [hasMore, setHasMore] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
   const [searchKeyword, setSearchKeyword] = useState("");
-  
+
   // Scroll container ref
   const scrollContainerRef = useRef(null);
 
   const { data: postTitles } = useFetch(
-    `${import.meta.env.VITE_API_URL}/posts/titles?status=2`
+    `${
+      import.meta.env.VITE_API_URL
+    }/posts/titles?status=2&keyword=${searchKeyword}`
   );
 
   const { data: categories } = useFetch(
@@ -91,7 +93,7 @@ function ArticleSection() {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
         left: -200,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -100,7 +102,7 @@ function ArticleSection() {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({
         left: 200,
-        behavior: 'smooth'
+        behavior: "smooth",
       });
     }
   };
@@ -147,17 +149,17 @@ function ArticleSection() {
           </div>
         </div>
         <div className="hidden sm:flex sm:gap-2 sm:items-center sm:min-w-0 sm:flex-1">
-          <button 
+          <button
             onClick={scrollLeft}
             className="text-[#75716B] hover:text-[#43403B] cursor-pointer hover:bg-[#DAD6D1] rounded-sm p-2 flex-shrink-0"
           >
             <FaArrowLeft />
           </button>
           <div className="relative w-fullflex justify-between items-center min-w-0 overflow-hidden">
-            <div 
+            <div
               ref={scrollContainerRef}
-              className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth" 
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+              className="flex gap-2 overflow-x-auto scrollbar-hide scroll-smooth"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
             >
               <button
                 value="all"
@@ -191,7 +193,7 @@ function ArticleSection() {
                 ))}
             </div>
           </div>
-          <button 
+          <button
             onClick={scrollRight}
             className="text-[#75716B] hover:text-[#43403B] cursor-pointer hover:bg-[#DAD6D1] rounded-sm p-2 flex-shrink-0"
           >
@@ -209,10 +211,10 @@ function ArticleSection() {
         <div className="text-center text-gray-500">No posts found</div>
       )}
       {hasMore && (
-        <div className="text-center mt-8">
+        <div className="text-center mt-10 md:mt-15">
           <button
             onClick={handleLoadMore}
-            className="hover:text-muted-foreground font-medium underline cursor-pointer"
+            className="hover:text-muted-foreground font-medium cursor-pointer"
           >
             {isLoading ? (
               <ImSpinner2
@@ -221,7 +223,9 @@ function ArticleSection() {
                 size={40}
               />
             ) : (
-              "View more"
+              <div className="flex items-center gap-2 bg-green-300 hover:bg-green-400 cursor-pointer text-black rounded-sm px-4 py-2">
+                <span>View more</span>
+              </div>
             )}
           </button>
         </div>

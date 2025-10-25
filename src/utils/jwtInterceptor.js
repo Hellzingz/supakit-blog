@@ -25,9 +25,9 @@ function jwtInterceptor() {
       if (
         error.response &&
         error.response.status === 401 &&
-        error.response.data?.error?.includes("Unauthorized")
+        error.response.data?.error?.includes("Unauthorized") &&
+        !error.config?.url?.includes("/auth/reset-password")
       ) {
-        // ตรวจสอบว่าเราอยู่ใน browser environment
         if (typeof window !== 'undefined') {
           localStorage.removeItem("token");
         }

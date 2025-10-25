@@ -7,22 +7,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import useFetch from "@/hooks/useFetch";
-import ConfirmModal from "@/components/ConfirmModal";
 import { toastSuccess } from "@/utils/toast";
-import { TrashIcon } from "@/components/icons/TrashIcon";
-import { EditIcon } from "@/components/icons/EditIcon";
+import AdminArticleTable from "@/components/AdminArticleTable";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { ImSpinner2 } from "react-icons/im";
 
 const statusData = [
   { id: 2, name: "Publish" },
@@ -30,17 +22,17 @@ const statusData = [
 ];
 
 function ArticleList() {
-
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(20);
-  
+
   const [category, setCategory] = useState("");
   const [search, setSearch] = useState("");
   const [status, setStatus] = useState("");
 
   const navigate = useNavigate();
-  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [articleId, setArticleId] = useState(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const limit = 10;
 
   const params = new URLSearchParams();
   params.set("page", page);
@@ -49,8 +41,8 @@ function ArticleList() {
   params.set("keyword", search);
   params.set("status", status);
   const url = `${import.meta.env.VITE_API_URL}/posts?${params.toString()}`;
-  
-  const { data, isLoading, error, fetchData } = useFetch(url);
+
+  const { data, isLoading, fetchData } = useFetch(url);
 
   const { data: categories } = useFetch(
     `${import.meta.env.VITE_API_URL}/categories`
@@ -65,37 +57,24 @@ function ArticleList() {
   };
 
   const handleDelete = async (id) => {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
-    setShowConfirmModal(false);
-    setArticleId(null);
-    fetchData();
-    toastSuccess("Post deleted successfully");
+    try {
+      setIsDeleting(true);
+      await axios.delete(`${import.meta.env.VITE_API_URL}/posts/${id}`);
+      setIsDeleting(false);
+      setArticleId(null);
+      fetchData();
+      toastSuccess("Post deleted successfully");
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleDeleteClick = (id) => {
-    setShowConfirmModal(true);
+    setIsDeleting(true);
     setArticleId(id);
   };
-
-  if (isLoading) {
-    return (
-      <div className="w-full">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-lg">Loading articles...</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="w-full">
-        <div className="flex justify-center items-center h-64">
-          <div className="text-red-500">Error: {error.message}</div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="w-full">
@@ -111,91 +90,62 @@ function ArticleList() {
 
       {/* Search input and filter dropdowns */}
       <div className="flex flex-col md:flex-row gap-5 md:gap-2 px-2 md:px-10 justify-between">
-        <Input placeholder="Search" className="w-full md:max-w-75" value={search} onChange={(e) => setSearch(e.target.value)} />
+        <Input
+          placeholder="Search"
+          className="w-full md:w-50"
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
         <div className="flex gap-2">
           {/* Status filter dropdown */}
           <Select onValueChange={(value) => setStatus(value)}>
-            <SelectTrigger className="w-full md:max-w-40">
+            <SelectTrigger className="w-full md:w-40 cursor-pointer">
               <SelectValue placeholder="Status" />
             </SelectTrigger>
             <SelectContent>
-              {Array.isArray(statusData) && statusData.map((status) => (
-                <SelectItem key={status.id} value={status.id}>
-                  {status.name}
-                </SelectItem>
-              ))}
+              <SelectItem value="all" className="text-muted-foreground cursor-pointer">All status</SelectItem>
+              {Array.isArray(statusData) &&
+                statusData.map((status) => (
+                  <SelectItem className="cursor-pointer" key={status.id} value={status.id.toString()}>
+                    {status.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
           {/* Category filter dropdown */}
           <Select onValueChange={(value) => setCategory(value)}>
-            <SelectTrigger className="w-full md:max-w-40">
+            <SelectTrigger className="w-full md:w-40 cursor-pointer">
               <SelectValue placeholder="Category" />
             </SelectTrigger>
             <SelectContent>
-              {Array.isArray(categories) && categories.map((category) => (
-                <SelectItem key={category.id} value={category.id.toString()}>
-                  {category.name}
-                </SelectItem>
-              ))}
+              <SelectItem value="all" className="text-muted-foreground cursor-pointer">All categories</SelectItem>
+              {Array.isArray(categories) &&
+                categories.map((category) => (
+                  <SelectItem className="cursor-pointer" key={category.id} value={category.id.toString()}>
+                    {category.name}
+                  </SelectItem>
+                ))}
             </SelectContent>
           </Select>
         </div>
       </div>
       {/* ===== ARTICLES TABLE ===== */}
-      <div className="p-4 md:p-10">
-        <Table>
-          {/* Table header with column titles */}
-          <TableHeader>
-            <TableRow>
-              <TableHead className="w-[50%]">Article title</TableHead>
-              <TableHead>Category</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          
-          {/* Table body with article data */}
-          <TableBody>
-            {Array.isArray(data?.posts) && data.posts.map((post, index) => (
-              <TableRow key={index}>
-                <TableCell className="font-medium">{post.title}</TableCell>
-                <TableCell>{post.category}</TableCell>
-                <TableCell>
-                  <span className="inline-flex capitalize items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                    {post.status}
-                  </span>
-                </TableCell>
-                
-                {/* Action buttons column */}
-                <TableCell className="text-right">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      handleEdit(post.id);
-                    }}
-                  >
-                    <EditIcon />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => handleDeleteClick(post.id)}
-                  >
-                    <TrashIcon />
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-      {showConfirmModal && (
-        <ConfirmModal
+      <AdminArticleTable
+        data={data}
+        isLoading={isLoading}
+        handleEdit={handleEdit}
+        handleDeleteClick={handleDeleteClick}
+        setPage={setPage}
+        page={page}
+      />
+      {isDeleting && (
+        <ConfirmDialog
           title="Delete Article"
           description="Are you sure you want to delete this article?"
-          onCancel={() => setShowConfirmModal(false)}
+          onCancel={() => setIsDeleting(false)}
           onConfirm={() => handleDelete(articleId)}
+          isOpen={isDeleting}
+          setIsOpen={setIsDeleting}
         />
       )}
     </div>

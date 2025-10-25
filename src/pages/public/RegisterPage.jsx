@@ -2,8 +2,12 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { NavBar } from "@/components/NavBar";
 import { Link, useNavigate } from "react-router-dom";
-import { useAuth } from "@/context/authContext";
 import { registerSchema, validateData } from "@/utils/validate";
+import { useAuth } from "@/context/authContext";
+import { ImSpinner2 } from "react-icons/im";
+import { validateRegister } from "@/utils/validateRegister";
+import { toastError } from "@/utils/toast";
+import InputField from "@/components/InputField";
 
 function RegisterPage() {
   const [name, setName] = useState("");
@@ -12,33 +16,56 @@ function RegisterPage() {
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
 
-  const { register } = useAuth();
+  const { register, state } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {     
+    setErrors({}); // Clear previous errors
+
+    try {
       const data = {
         name: name,
         username: username,
         email: email,
         password: password,
       };
-      const { isValid, errors } = validateData(registerSchema, data);
-      if(!isValid){
-        return setErrors(errors);
+      const errors = validateRegister(data);
+      if (Object.keys(errors).length > 0) {
+        setErrors(errors);
+        return;
       }
-      await register(data);
-      setName("")
-      setUsername("")
-      setEmail("")
-      setPassword("")
-      navigate("/success");
+
+      const { isValid, errors: validationErrors } = validateData(
+        registerSchema,
+        data
+      );
+      if (!isValid) {
+        setErrors(validationErrors);
+        return;
+      }
+
+      const result = await register(data);
+      if (result?.success) {
+        setName("");
+        setUsername("");
+        setEmail("");
+        setPassword("");
+        setErrors({});
+        navigate("/success");
+      }
     } catch (error) {
-      console.log(error);
+      if (error.message.includes("Username")) {
+        setErrors({ username: error.message });
+      } else if (error.message.includes("Email")) {
+        setErrors({ email: error.message });
+      } else {
+        setErrors({ general: error.message });
+      }
+      toastError(error.message);
     }
   };
-  
+
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
@@ -47,81 +74,63 @@ function RegisterPage() {
           <h2 className="text-4xl font-semibold text-center mb-6 text-foreground">
             Sign up
           </h2>
-          <form className="space-y-8" onSubmit={handleSubmit}>
-            <div className="relative space-y-1">
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Name
-              </label>
-              <Input
-                id="name"
-                type="text"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
-              />
-              {errors?.name && <p className="text-red-500">{errors.name}</p> }
+          {errors?.general && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4">
+              {errors.general}
             </div>
-            <div className="relative space-y-1">
-              <label
-                htmlFor="username"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Username
-              </label>
-              <Input
-                id="username"
-                type="text"
-                placeholder="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
-              />
-              {errors?.username && <p className="text-red-500" >{errors.username}</p> }
-            </div>
-            <div className="relative space-y-1">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Email
-              </label>
-              <Input
-                id="email"
-                type="text"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
-              />
-              {errors?.email && <p className="text-red-500">{errors.email}</p> }
-            </div>
-            <div className="relative space-y-1">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
-              />
-              {errors?.password && <p className="text-red-500">{errors.password}</p> }
-            </div>
+          )}
+          <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+            <InputField
+              label="Name"
+              type="text"
+              name="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              errors={errors?.name}
+              placeholder="Name"
+            />
+            <InputField
+              label="Username"
+              type="text"
+              name="username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              errors={errors?.username}
+              placeholder="Username"
+            />
+            <InputField
+              label="Email"
+              name="email"
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              errors={errors?.email}
+              placeholder="Email"
+            />
+            <InputField
+              label="Password"
+              name="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              errors={errors?.password}
+              placeholder="Password"
+            />
+
             <div className="flex justify-center">
               <button
                 type="submit"
-                className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer"
+                disabled={state.loading}
+                className="px-8 py-2 h-10 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                Sign up
+                {state.loading ? (
+                  <div className="flex items-center gap-2">
+                    <ImSpinner2 className="animate-spin" />
+                    Loading...
+                  </div>
+                ) : (
+                  "Sign up"
+                )}
               </button>
             </div>
             <p className="text-center text-gray-400">

@@ -1,13 +1,13 @@
 import { Navigate } from "react-router-dom";
+import LoadingSpinner from "@/components/LoadingSpinner";
+import UserSideBar from "@/components/UserSideBar";
 
 function AuthenticationRoute({ isLoading, isAuthenticated, children }) {
   if (isLoading === null || isLoading) {
     // สถานะกำลังโหลดข้อมูลหรือยังไม่มีข้อมูล
     return (
-      <div className="flex flex-col min-h-screen">
-        <div className="min-h-screen md:p-8">
-          <p>Loading....</p>
-        </div>
+      <div className="flex flex-col justify-center items-center min-h-screen">
+        <LoadingSpinner message="Please wait ..." />
       </div>
     );
   }
