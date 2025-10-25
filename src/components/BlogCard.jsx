@@ -1,6 +1,6 @@
 import { formatDate } from "../utils/date";
 import { Link } from "react-router-dom";
-import { UserAvartar } from "./icons/UserAvartar";
+import { Avatar } from "./ui/avatar";
 function BlogCard({ post }) {
   const { image, category, title, description, date } = post;
   const formattedDate = formatDate(date);
@@ -36,15 +36,19 @@ function BlogCard({ post }) {
             </p>
             <div className="flex items-center text-sm">
               {post.user.profile_pic ? (
-                <img
-                  className="w-8 h-8 rounded-full mr-2"
+                <Avatar className="w-8 h-8 rounded-full mr-2">
+                  <img
+                  className="object-cover rounded-full"
                   src={post.user.profile_pic}
                   alt="author name"
-                />
+                  />
+                </Avatar>
               ) : (
-                <div className="w-8 h-8 rounded-full mr-2 bg-gray-200 flex items-center justify-center">
-                  <UserAvartar />
-                </div>
+                <Avatar className="w-8 h-8 rounded-full mr-2 bg-gray-200 flex items-center justify-center">
+                  <span className="text-gray-500 text-xl font-semibold">
+                    {post.user.name.charAt(0)}
+                  </span>
+                </Avatar>
               )}
               <span>{post.user.name}</span>
               <span className="mx-2 text-gray-300">|</span>

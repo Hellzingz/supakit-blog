@@ -1,7 +1,7 @@
 import { useAuth } from "@/context/authContext";
 import { ExpandDown } from "./icons/ExpandDown";
-import { CiUser } from "react-icons/ci";
 import NotificationBell from "./NotificationBell";
+import { Avatar } from "./ui/avatar";
 
 const NavbarProfile = ({ openMenu }) => {
   const { state } = useAuth();
@@ -9,19 +9,24 @@ const NavbarProfile = ({ openMenu }) => {
   const name = state?.user?.name;
   const role = state?.user?.role;
   return (
-    <div className="w-full flex sm:flex-row-reverse sm:gap-4 px-4 items-center">
-      <div 
-      onClick={openMenu}
-      className="w-full flex items-center gap-2 sm:justify-end cursor-pointer">
-        <div className="bg-white rounded-full min-w-10 min-h-10 flex items-center justify-center">
+    <div className="w-full flex sm:flex-row-reverse sm:gap-4 px-2 sm:px-4 items-center">
+      <div
+        onClick={openMenu}
+        className="w-full flex items-center gap-2 sm:justify-end cursor-pointer"
+      >
+        <Avatar className="w-10 h-10">
           {avatar ? (
-            <img src={avatar} width={35} height={35} className="rounded-full" />
+            <img src={avatar} className="object-cover rounded-full" />
           ) : (
-            <CiUser size={35} strokeWidth={0.1}/>
+            <span className="text-gray-500 text-xl font-semibold">
+                {name.charAt(0)}
+              </span>
           )}
-        </div>
+        </Avatar>
         <div className="w-full flex items-center gap-2">
-          <span className="text-md font-medium overflow-hidden whitespace-nowrap">{name}</span>
+          <span className="text-md font-medium overflow-hidden whitespace-nowrap">
+            {name}
+          </span>
           <div className="hidden sm:block cursor-pointer">
             <ExpandDown />
           </div>
@@ -30,7 +35,7 @@ const NavbarProfile = ({ openMenu }) => {
       <div className="w-full flex items-center justify-end">
         {role === "admin" && (
           <div className="bg-white rounded-full min-w-10 min-h-10 border border-gray-200 flex items-center justify-center cursor-pointer">
-            <NotificationBell/>
+            <NotificationBell />
           </div>
         )}
       </div>

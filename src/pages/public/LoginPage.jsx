@@ -1,14 +1,18 @@
 import { useState } from "react";
-import { Input } from "@/components/ui/input";
 import { NavBar } from "@/components/NavBar";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/context/authContext";
-
+import { toastError } from "@/utils/toast";
+import { ImSpinner2 } from "react-icons/im";
+import InputField from "@/components/InputField";
 function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errors, setErrors] = useState({});
-  const { login } = useAuth();
+  const {
+    login,
+    state: { loading: isLoading },
+  } = useAuth();
 
   const navigate = useNavigate();
 
@@ -25,14 +29,21 @@ function LoginPage() {
         email: email,
         password: password,
       };
-      await login(data);
-      setEmail("");
-      setPassword("");
-      navigate("/");
+      const result = await login(data);
+
+      // ถ้า login สำเร็จ (ไม่มี error) ให้ clear form และ navigate
+      if (result?.success) {
+        setEmail("");
+        setPassword("");
+        setErrors({});
+        navigate("/");
+      }
     } catch (error) {
       console.log(error);
+      toastError("Login failed");
     }
   };
+
   return (
     <div className="flex flex-col min-h-screen">
       <NavBar />
@@ -42,48 +53,38 @@ function LoginPage() {
             Log in
           </h2>
           <form className="space-y-8" onSubmit={handleSubmit}>
-            <div className="relative space-y-1">
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Email
-              </label>
-              <Input
-                id="email"
-                type="text"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground `}
-              />
-              {errors?.email && <p className="text-red-500">{errors.email}</p>}
-            </div>
-            <div className="relative space-y-1">
-              <label
-                htmlFor="password"
-                className="block text-sm font-medium text-muted-foreground"
-              >
-                Password
-              </label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="Password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground`}
-              />
-              {errors?.password && (
-                <p className="text-red-500">{errors.password}</p>
-              )}
-            </div>
+            <InputField
+              label="Email"
+              type="email"
+              name="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              errors={errors?.email}
+              placeholder="Email"
+            />
+            <InputField
+              label="Password"
+              type="password"
+              name="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              errors={errors?.password}
+              placeholder="Password"
+            />
             <div className="flex justify-center">
               <button
+                disabled={isLoading}
                 type="submit"
                 className="px-8 py-2 bg-foreground text-white rounded-full hover:bg-muted-foreground transition-colors cursor-pointer"
               >
-                Log in
+                {isLoading ? (
+                  <div className="flex justify-center items-center gap-2">
+                    <ImSpinner2 className="animate-spin" />
+                    Loading...
+                  </div>
+                ) : (
+                  <span>Log in</span>
+                )}
               </button>
             </div>
             <p className="text-center text-gray-400">

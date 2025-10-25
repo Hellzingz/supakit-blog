@@ -2,13 +2,11 @@ import { Routes, Route } from "react-router-dom";
 import DefaultLayout from "./layouts/DefaultLayout";
 
 //Auth Routes
-import AuthenticationRoute from "./routes/AuthenticationRoute";
 import ProtectedRoute from "./routes/ProtectedRoute";
 
 //Pages
 import HomePage from "./pages/public/HomePage";
 import NotFoundPage from "./pages/public/NotFoundPage";
-import MemberPage from "./pages/member/MemberPage";
 import UserLayout from "./layouts/UserLayout";
 import LoginPage from "./pages/public/LoginPage";
 import RegisterPage from "./pages/public/RegisterPage";

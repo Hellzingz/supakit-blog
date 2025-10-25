@@ -1,16 +1,27 @@
 import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { useState } from "react";
+import { IoIosClose } from "react-icons/io";
 import { useOutsideClick } from "@/hooks/useOutsideClick";
 
-const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, setSearchKeyword }) => {
+const SearchDropdown = ({
+  data,
+  selectedPost,
+  setSelectedPost,
+  searchKeyword,
+  setSearchKeyword,
+}) => {
   const [isOpen, setIsOpen] = useState(false);
-  const filtered = Array.isArray(data) ? data.filter((item) => item.title.toLowerCase().includes(searchKeyword.toLowerCase())) : [];
-  
+  const filtered = Array.isArray(data)
+    ? data.filter((item) =>
+        item.title.toLowerCase().includes(searchKeyword.toLowerCase())
+      )
+    : [];
+
   const dropdownRef = useOutsideClick(() => {
     setIsOpen(false);
   }, isOpen);
-  
+
   const handleSelectPost = (item) => {
     setSelectedPost(item);
     setIsOpen(false);
@@ -24,10 +35,21 @@ const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, se
   return (
     <>
       <div className="relative" ref={dropdownRef}>
-        <Search className="absolute right-3 top-2 text-gray-400 cursor-pointer" />
+        {selectedPost ? (
+          <div
+            className="absolute translate-y-1/4 right-1 text-gray-400 cursor-pointer"
+            onClick={() => setSelectedPost("")}
+          >
+            <IoIosClose className="size-6" />
+          </div>
+        ) : (
+          <Search 
+          onClick={() => setIsOpen(!isOpen)}
+          className="absolute translate-y-1/3 right-1 text-gray-400 cursor-pointer" />
+        )}
         <Input
           placeholder="Search"
-          className="bg-white"
+          className="bg-white pr-8"
           onClick={() => setIsOpen(!isOpen)}
           value={searchKeyword || selectedPost?.title || ""}
           onChange={handleSearch}
@@ -40,14 +62,16 @@ const SearchDropdown = ({ data, selectedPost, setSelectedPost, searchKeyword, se
               filtered.map((item) => (
                 <div
                   key={item.id}
-                  className="w-full px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                  className="w-full px-4 py-2 hover:bg-gray-100 truncate cursor-pointer"
                   onClick={() => handleSelectPost(item)}
                 >
                   {item.title}
                 </div>
               ))
             ) : (
-              <div className="w-full px-4 py-2 text-gray-500">No posts found</div>
+              <div className="w-full px-4 py-2 text-gray-500">
+                No posts found
+              </div>
             )}
           </div>
         )}

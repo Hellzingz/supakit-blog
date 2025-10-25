@@ -7,6 +7,7 @@ import { useAuth } from "@/context/authContext";
 import { toastSuccess, toastError } from "@/utils/toast";
 import { userProfileSchema, validateData } from "@/utils/validate";
 import axios from "axios";
+import { PropagateLoader } from "react-spinners";
 function AdminProfile() {
   const [profile, setProfile] = useState({
     id: "",
@@ -65,12 +66,12 @@ function AdminProfile() {
       ...prevData,
       [name]: value,
     }));
-    
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({
+      setErrors((prev) => ({
         ...prev,
-        [name]: ""
+        [name]: "",
       }));
     }
   };
@@ -83,7 +84,7 @@ function AdminProfile() {
       username: profile.username,
       email: profile.email,
     });
-    
+
     if (!validation.isValid) {
       setErrors(validation.errors);
       return;
@@ -129,7 +130,7 @@ function AdminProfile() {
           }
         );
       }
-      
+
       toastSuccess("Updated Successfully");
       setImageFile(null);
     } catch (error) {
@@ -153,88 +154,104 @@ function AdminProfile() {
           </Button>
         </div>
 
-        <div>
-          <div className="flex items-center mb-6">
-            <Avatar className="w-24 h-24 mr-4">
-              {imageFile ? (
-                <img
-                  src={URL.createObjectURL(imageFile.file)}
-                  alt="Preview"
-                  className="max-w-full max-h-48 object-contain"
-                />
-              ) : (
-                <div>
-                  <img
-                    src={profile.image}
-                    alt="prolfile-pic"
-                    className="max-w-full max-h-48 object-contain"
-                  />
-                </div>
-              )}
-            </Avatar>
-            <Button asChild>
-              <div className="flex items-center justify-center w-full max-w-40">
-                <input
-                  className="w-full max-w-20"
-                  id="file-upload"
-                  name="file-upload"
-                  type="file"
-                  onChange={handleFileChange}
-                />
-              </div>
+        <div className="flex items-center mb-6">
+          <Avatar className="w-24 h-24 mr-4 rounded-full">
+            {imageFile ? (
+              <img
+                src={URL.createObjectURL(imageFile.file)}
+                alt="Preview"
+                className="max-w-full max-h-48 object-cover"
+              />
+            ) : (
+              <img
+                src={profile.image}
+                alt="prolfile-pic"
+                className="max-w-full max-h-48 object-cover rounded-full"
+              />
+            )}
+          </Avatar>
+          <div className="relative">
+            <input
+              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+              id="file-upload"
+              name="file-upload"
+              type="file"
+              onChange={handleFileChange}
+            />
+            <Button className="w-full max-w-50 cursor-pointer">
+              Choose Profile Picture
             </Button>
           </div>
-
-          <form className="space-y-7 max-w-2xl">
-            <div>
-              <label htmlFor="name">Name</label>
-              <Input
-                value={profile.name}
-                id="name"
-                name="name"
-                onChange={handleInputChange}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${errors.name ? 'border-red-500' : ''}`}
-                placeholder="Enter your name (4-20 characters, English only)"
-              />
-              {errors.name && <p className="text-red-500 text-sm mt-1">{errors.name}</p>}
-            </div>
-            <div>
-              <label htmlFor="username">Username</label>
-              <Input
-                id="username"
-                name="username"
-                onChange={handleInputChange}
-                value={profile.username}
-                className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${errors.username ? 'border-red-500' : ''}`}
-                placeholder="Enter username (4-15 characters, letters and numbers only)"
-              />
-              {errors.username && <p className="text-red-500 text-sm mt-1">{errors.username}</p>}
-            </div>
-            <div>
-              <label htmlFor="email">Email</label>
-              <Input
-                id="email"
-                name="email"
-                disabled
-                type="email"
-                value={profile.email}
-                className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
-              />
-            </div>
-            <div>
-              <label htmlFor="bio">Bio</label>
-              <Textarea
-                id="bio"
-                name="bio"
-                onChange={handleInputChange}
-                value={profile.bio || "No bio available"}
-                rows={10}
-                className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
-              />
-            </div>
-          </form>
         </div>
+
+        <form className="space-y-7 max-w-2xl">
+          <div>
+            <label htmlFor="name">Name</label>
+            <Input
+              value={profile.name}
+              id="name"
+              name="name"
+              onChange={handleInputChange}
+              className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
+                errors.name ? "border-red-500" : ""
+              }`}
+              placeholder="Enter your name"
+            />
+            {errors.name && (
+              <p className="text-red-500 text-sm mt-1">{errors.name}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="username">Username</label>
+            <Input
+              id="username"
+              name="username"
+              onChange={handleInputChange}
+              value={profile.username}
+              className={`mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground ${
+                errors.username ? "border-red-500" : ""
+              }`}
+              placeholder="Enter username (4-15 characters, letters and numbers only)"
+            />
+            {errors.username && (
+              <p className="text-red-500 text-sm mt-1">{errors.username}</p>
+            )}
+          </div>
+          <div>
+            <label htmlFor="email">Email</label>
+            <Input
+              id="email"
+              name="email"
+              disabled
+              type="email"
+              value={profile.email}
+              className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
+            />
+          </div>
+          <div>
+            <label htmlFor="bio">Bio</label>
+            <Textarea
+              id="bio"
+              name="bio"
+              onChange={handleInputChange}
+              value={profile.bio || "No bio available"}
+              rows={10}
+              className="mt-1 py-3 rounded-sm placeholder:text-muted-foreground focus-visible:ring-0 focus-visible:ring-offset-0 focus-visible:border-muted-foreground"
+            />
+          </div>
+        </form>
       </main>
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-transparent"></div>
+          <div className="relative p-8 flex flex-col items-center gap-10">
+            <PropagateLoader color="#000000" size={30} />
+            <p className="text-gray-800 font-medium">
+              Updating profile<span className="text-xl animate-pulse">...</span>
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

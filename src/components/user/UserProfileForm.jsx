@@ -2,15 +2,11 @@ import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/ui/avatar";
 import { useState, useEffect } from "react";
 import { toastSuccess, toastError } from "@/utils/toast";
-import {
-  userProfileSchema,
-  validateData,
-  checkUsernameAvailability,
-  checkEmailAvailability,
-} from "@/utils/validate";
+import { userProfileSchema, validateData } from "@/utils/validate";
 import axios from "axios";
 import { UserAvartar } from "../icons/UserAvartar";
 import { useAuth } from "@/context/authContext";
+import { PropagateLoader } from "react-spinners";
 
 function UserProfileForm() {
   const [imageFile, setImageFile] = useState(null);
@@ -84,27 +80,7 @@ function UserProfileForm() {
       setErrors(validation.errors);
       return false;
     }
-
-    // Check for duplicates
-    const newErrors = {};
-
-    // Check username availability
-    const usernameCheck = await checkUsernameAvailability(
-      profile.username,
-      profile.id
-    );
-    if (!usernameCheck.isAvailable) {
-      newErrors.username = usernameCheck.message || "Username already exists";
-    }
-
-    // Check email availability
-    const emailCheck = await checkEmailAvailability(profile.email, profile.id);
-    if (!emailCheck.isAvailable) {
-      newErrors.email = emailCheck.message || "Email already exists";
-    }
-
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
+    return true;
   };
 
   const handaleSave = async (e) => {
@@ -128,7 +104,7 @@ function UserProfileForm() {
         formData.append("imageFile", imageFile.file);
 
         await axios.put(
-          `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+          `${import.meta.env.VITE_API_URL}/auth/update-user-profile`,
           formData,
           {
             headers: {
@@ -139,7 +115,7 @@ function UserProfileForm() {
         );
       } else {
         await axios.put(
-          `${import.meta.env.VITE_API_URL}/auth/update-profile`,
+          `${import.meta.env.VITE_API_URL}/auth/update-user-profile`,
           {
             id: profile.id,
             name: profile.name,
@@ -155,7 +131,6 @@ function UserProfileForm() {
       }
 
       toastSuccess("Updated Successfully");
-      // รีเซ็ตไฟล์หลังจากบันทึกสำเร็จ
       setImageFile(null);
     } catch (error) {
       console.error("Error updating profile:", error);
@@ -169,40 +144,66 @@ function UserProfileForm() {
     <div className="w-full max-w-2xl">
       <div className="flex items-center gap-4">
         <div className="sm:hidden flex items-center gap-2 border-r-2 border-gray-200 pr-4">
-          {user?.profilePic ? <img src={user.profilePic} alt="profile-pic" className="w-10 h-10 rounded-full" /> : <UserAvartar />}
-          <span className="text-xl font-semibold text-gray-500">{user?.name}</span>
+          {user?.profilePic ? (
+            <Avatar className="w-10 h-10 rounded-full">
+              <img
+                src={user.profilePic}
+                alt="profile-pic"
+                className="object-cover rounded-full"
+              />
+            </Avatar>
+          ) : (
+            <Avatar className="w-10 h-10 rounded-full">
+              <span className="text-gray-500 text-xl font-semibold">
+                {user?.name?.charAt(0)}
+              </span>
+            </Avatar>
+          )}
+          <span className="text-xl font-semibold text-gray-500">
+            {user?.name}
+          </span>
         </div>
         <span className="text-xl sm:text-2xl font-semibold">Profile</span>
       </div>
       <div className="bg-gray-100 rounded-xl p-4 sm:p-10 mt-5">
         <form onSubmit={handaleSave} className="flex flex-col gap-3">
           <div className="flex items-center mb-6">
-            <Avatar className="w-24 h-24 mr-4">
-              {imageFile ? (
+            {imageFile ? (
+              <Avatar className="w-24 h-24 mr-4 rounded-full">
                 <img
                   src={URL.createObjectURL(imageFile.file)}
                   alt="Preview"
-                  className="max-w-full max-h-48 object-contain"
+                  className="max-w-full max-h-48 object-cover rounded-full"
                 />
-              ) : profile.image ? (
+              </Avatar>
+            ) : profile.image ? (
+              <Avatar className="w-24 h-24 mr-4 rounded-full">
                 <img
                   src={profile.image}
                   alt="profile-pic"
-                  className="max-w-full max-h-48 object-contain"
+                  className="max-w-full max-h-48 object-cover rounded-full"
                 />
-              ) : (
-                <UserAvartar className="w-24 h-24" />
-              )}
-            </Avatar>
+              </Avatar>
+            ) : (
+              <Avatar className="w-24 h-24 mr-4 rounded-full">
+                <span className="text-gray-500 text-xl font-semibold">
+                  {user?.name?.charAt(0)}
+                </span>
+              </Avatar>
+            )}
+
             <Button asChild>
-              <div className="flex items-center justify-center w-full max-w-40">
+              <div className="relative">
                 <input
-                  className="w-full max-w-20"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                   id="file-upload"
                   name="file-upload"
                   type="file"
                   onChange={handleFileChange}
                 />
+                <Button className="w-full max-w-50 cursor-pointer">
+                  Choose Profile Picture
+                </Button>
               </div>
             </Button>
           </div>
@@ -236,6 +237,7 @@ function UserProfileForm() {
 
           <label htmlFor="email">Email</label>
           <input
+            disabled
             type="email"
             name="email"
             className={`border p-2 rounded-md ${
@@ -253,6 +255,17 @@ function UserProfileForm() {
           </Button>
         </form>
       </div>
+      {isLoading && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-transparent"></div>
+          <div className="relative p-8 flex flex-col items-center gap-10">
+            <PropagateLoader color="#000000" size={30} />
+            <p className="text-gray-800 font-medium">
+              Updating profile<span className="text-xl animate-pulse">...</span>
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
