@@ -6,6 +6,7 @@ import { TwitterIcon } from "./icons/TwitterIcon";
 import { BiSolidLike } from "react-icons/bi";
 import axios from "axios";
 import { useState } from "react";
+import { toast } from "sonner";
 
 function LikeShare({ isAuthenticated, setOpen, likes, postData, user }) {
   const [like, setLikes] = useState(likes);
@@ -38,6 +39,7 @@ function LikeShare({ isAuthenticated, setOpen, likes, postData, user }) {
 
   const handleCopyLink = () => {
     navigator.clipboard.writeText(window.location.href);
+    toast.success("Link copied to clipboard");
   };
 
   const url = encodeURIComponent(window.location.href);
@@ -80,7 +82,7 @@ function LikeShare({ isAuthenticated, setOpen, likes, postData, user }) {
           <div>
             <Button
               onClick={handleCopyLink}
-              className="bg-white h-12 px-12 py-3 hover:bg-gray-100 text-black rounded-3xl"
+              className="bg-white h-12 px-12 py-3 hover:bg-blue-400 text-black rounded-3xl cursor-pointer"
             >
               <IoCopyOutline />
               <span>Copy Link</span>

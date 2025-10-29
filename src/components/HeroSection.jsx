@@ -1,11 +1,11 @@
 import React from "react";
-import Hero from "../assets/img/hero.jpg";
+import Coding from "../assets/img/Coding.png";
 
 export function HeroSection() {
   return (
     <section className="w-full py-8 lg:py-16 max-w-[1440px] mx-auto">
       <div className="flex flex-col md:flex-row md:justify-between items-center gap-10">
-        <div className="max-w-[347px] mb-8 lg:mb-0 lg:pr-3 text-start lg:text-end">
+        <div className="max-w-[347px] mb-8 lg:mb-0 text-start lg:text-end">
           <h1 className="text-4xl lg:text-5xl font-semibold mb-4">
             Stay <br className="hidden xl:block" />
             Informed, <br className="sm:block md:hidden" />
@@ -18,23 +18,23 @@ export function HeroSection() {
         </div>
         <div className="w-full min-w-[320px] md:max-w-[550px] rounded-lg shadow-lg">
           <img
-            src={Hero}
-            alt="Person with a cat"
+            src={Coding}
+            alt="coding"
             className="h-[530px] object-cover w-full"
           />
         </div>
 
         <div className="max-w-[347px]">
           <h2 className="text-xs mb-2">-Author</h2>
-          <h3 className="text-2xl font-semibold mb-4">Thompson P.</h3>
+          <h3 className="text-2xl font-semibold mb-4">Supakit J.</h3>
           <p className="text-[#75716B] mb-4">
-            I am a pet enthusiast and freelance writer who specializes in animal
-            behavior and care. With a deep love for cats, I enjoy sharing
-            insights on feline companionship and wellness.
+            I am a Full Stack Developer passionate about growth and learning. I
+            love exploring new ideas and turning them into real solutions. Every
+            project is an opportunity to improve and challenge myself.
           </p>
           <p className="text-[#75716B]">
-            When I'm not writing, I spend time volunteering at my local animal
-            shelter, helping cats find loving homes.
+            I am driven by curiosity and a desire to keep evolving as a
+            developer.
           </p>
         </div>
       </div>
