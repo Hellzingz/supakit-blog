@@ -3,6 +3,7 @@ import DefaultLayout from "./layouts/DefaultLayout";
 
 //Auth Routes
 import ProtectedRoute from "./routes/ProtectedRoute";
+import PublicRoute from "./routes/PublicRoute";
 
 //Pages
 import HomePage from "./pages/public/HomePage";
@@ -31,8 +32,22 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route
+          path="/login"
+          element={
+            <PublicRoute>
+              <LoginPage />
+            </PublicRoute>
+          }
+        />
+        <Route
+          path="/register"
+          element={
+            <PublicRoute>
+              <RegisterPage />
+            </PublicRoute>
+          }
+        />
         <Route path="/success" element={<RegisterSuccess />} />
         <Route element={<DefaultLayout />}>
           <Route path="/" element={<HomePage />} />
