@@ -86,9 +86,13 @@ function CategoryList() {
           </TableHeader>
           <TableBody>
             {isLoading ? (
-              <div className="flex justify-center items-center h-64">
-                <PropagateLoader color="#000000" size={30} />
-              </div>
+              <TableRow>
+                <TableCell colSpan={2} className="text-center py-20">
+                  <div className="flex justify-center items-center">
+                    <PropagateLoader color="#000000" size={30} />
+                  </div>
+                </TableCell>
+              </TableRow>
             ) : (
               Array.isArray(categories) &&
               categories.map((category, index) => (
