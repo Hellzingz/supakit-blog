@@ -240,7 +240,7 @@ function UserProfileForm() {
             disabled
             type="email"
             name="email"
-            className={`border p-2 rounded-md ${
+            className={`border p-2 rounded-md disabled:opacity-50 ${
               errors.email ? "border-red-500" : ""
             }`}
             value={profile.email}

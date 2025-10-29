@@ -16,11 +16,11 @@ export function HeroSection() {
             Dose of Inspiration <br /> and Information.
           </p>
         </div>
-        <div className="w-full min-w-[320px] md:max-w-[550px] rounded-lg shadow-lg">
+        <div className="w-full min-w-[320px] md:max-w-[550px]">
           <img
             src={Coding}
             alt="coding"
-            className="h-[530px] object-cover w-full"
+            className="h-[530px] object-cover w-full rounded-lg shadow-lg"
           />
         </div>
 

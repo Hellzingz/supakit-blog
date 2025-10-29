@@ -1,4 +1,4 @@
-import Logo from "../assets/img/logo.png";
+import Logo from "../assets/img/SJ_Logo.png";
 import { useToggle } from "../hooks/useToggle";
 import { useOutsideClick } from "../hooks/useOutsideClick";
 import { GiHamburgerMenu } from "react-icons/gi";
@@ -19,12 +19,12 @@ export function NavBar() {
   }, true);
 
   return (
-    <div className="w-full bg-white sm:border-b border-gray-200 py-4 sm:px-10 md:px-20">
-      <nav className="w-full flex flex-col sm:flex-row items-center justify-between px-5">
+    <div className="w-full bg-white sm:border-b border-gray-200 sm:px-10 md:px-20">
+      <nav className="w-full flex flex-col sm:flex-row items-center justify-between px-5 ">
         <div className="w-full flex items-center justify-between">
-          <div className="w-full border-b border-gray-200 sm:border-none">
-            <Link to="/">
-              <img src={Logo} alt="" />
+          <div className="w-full border-b py-4 border-gray-200 sm:border-none">
+            <Link className="cursor-pointer" to="/">
+              <img src={Logo} alt="logo" className="w-10 h-10" />
             </Link>
           </div>
           <div className="flex-1 hidden sm:flex items-center justify-end gap-2">
