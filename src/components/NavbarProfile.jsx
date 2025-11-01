@@ -14,13 +14,13 @@ const NavbarProfile = ({ openMenu }) => {
         onClick={openMenu}
         className="w-full flex items-center gap-2 sm:justify-end cursor-pointer"
       >
-        <Avatar className="w-10 h-10">
+        <Avatar className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
           {avatar ? (
             <img src={avatar} className="object-cover rounded-full" />
           ) : (
             <span className="text-gray-500 text-xl font-semibold">
-                {name.charAt(0)}
-              </span>
+              {name.charAt(0)}
+            </span>
           )}
         </Avatar>
         <div className="w-full flex items-center gap-2">

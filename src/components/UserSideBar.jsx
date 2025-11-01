@@ -25,7 +25,7 @@ function UserSideBar() {
     <aside className="w-full rounded-xl p-4 max-w-64 flex flex-row sm:flex-col justify-start items-start gap-5">
       <div className="hidden sm:flex justify-center items-center gap-2">
         {state.user.profilePic ? (
-          <Avatar className="w-10 h-10 rounded-full">
+          <Avatar className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
             <img
             src={state.user.profilePic}
             alt="profile-pic"
@@ -33,7 +33,7 @@ function UserSideBar() {
             />
           </Avatar>
         ) : (
-          <Avatar className="w-10 h-10 rounded-full">
+          <Avatar className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
             <span className="text-gray-500 text-xl font-semibold">
               {state.user.name.charAt(0)}
             </span>

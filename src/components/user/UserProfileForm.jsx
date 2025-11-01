@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 import { toastSuccess, toastError } from "@/utils/toast";
 import { userProfileSchema, validateData } from "@/utils/validate";
 import axios from "axios";
-import { UserAvartar } from "../icons/UserAvartar";
 import { useAuth } from "@/context/authContext";
 import { PropagateLoader } from "react-spinners";
 
@@ -31,10 +30,49 @@ function UserProfileForm() {
     });
   }, [user]);
 
+  const getAvatarDisplay = (size = "w-24 h-24", marginRight = "mr-4") => {
+    if (imageFile) {
+      return (
+        <Avatar
+          className={`${size} ${marginRight} flex items-center justify-center rounded-full bg-gray-200`}
+        >
+          <img
+            src={URL.createObjectURL(imageFile.file)}
+            alt="Preview"
+            className="max-w-full max-h-48 object-cover rounded-full"
+          />
+        </Avatar>
+      );
+    }
+
+    if (profile.image) {
+      return (
+        <Avatar
+          className={`${size} ${marginRight} flex items-center justify-center rounded-full bg-gray-200`}
+        >
+          <img
+            src={profile.image}
+            alt="profile-pic"
+            className="max-w-full max-h-48 object-cover rounded-full"
+          />
+        </Avatar>
+      );
+    }
+
+    return (
+      <Avatar
+        className={`${size} ${marginRight} flex items-center justify-center rounded-full bg-gray-200`}
+      >
+        <span className="text-gray-500 text-xl font-semibold">
+          {user?.name?.charAt(0)}
+        </span>
+      </Avatar>
+    );
+  };
+
   const handleFileChange = (event) => {
     const file = event.target.files[0];
 
-    // ตรวจสอบประเภทของไฟล์
     const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp"];
 
     if (!allowedTypes.includes(file.type)) {
@@ -42,13 +80,11 @@ function UserProfileForm() {
       return;
     }
 
-    // ตรวจสอบขนาดของไฟล์ (เช่น ขนาดไม่เกิน 5MB)
-    const maxSize = 5 * 1024 * 1024; // 5MB
+    const maxSize = 5 * 1024 * 1024;
     if (file.size > maxSize) {
       alert("The file is too large. Please upload an image smaller than 5MB.");
       return;
     }
-    // เก็บข้อมูลไฟล์
     setImageFile({ file });
   };
 
@@ -59,7 +95,6 @@ function UserProfileForm() {
       [name]: value,
     }));
 
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors((prev) => ({
         ...prev,
@@ -69,7 +104,6 @@ function UserProfileForm() {
   };
 
   const validateForm = async () => {
-    // Validate using Zod schema
     const validation = validateData(userProfileSchema, {
       name: profile.name,
       username: profile.username,
@@ -86,7 +120,6 @@ function UserProfileForm() {
   const handaleSave = async (e) => {
     e.preventDefault();
 
-    // Validate form before submitting
     const isValid = await validateForm();
     if (!isValid) {
       return;
@@ -94,8 +127,6 @@ function UserProfileForm() {
 
     try {
       setIsLoading(true);
-
-      // ถ้ามีไฟล์ใหม่ ใช้ FormData
       if (imageFile?.file) {
         const formData = new FormData();
         formData.append("id", profile.id);
@@ -144,21 +175,7 @@ function UserProfileForm() {
     <div className="w-full max-w-2xl">
       <div className="flex items-center gap-4">
         <div className="sm:hidden flex items-center gap-2 border-r-2 border-gray-200 pr-4">
-          {user?.profilePic ? (
-            <Avatar className="w-10 h-10 rounded-full">
-              <img
-                src={user.profilePic}
-                alt="profile-pic"
-                className="object-cover rounded-full"
-              />
-            </Avatar>
-          ) : (
-            <Avatar className="w-10 h-10 rounded-full">
-              <span className="text-gray-500 text-xl font-semibold">
-                {user?.name?.charAt(0)}
-              </span>
-            </Avatar>
-          )}
+          {getAvatarDisplay("w-10 h-10", "mr-0")}
           <span className="text-xl font-semibold text-gray-500">
             {user?.name}
           </span>
@@ -168,29 +185,7 @@ function UserProfileForm() {
       <div className="bg-gray-100 rounded-xl p-4 sm:p-10 mt-5">
         <form onSubmit={handaleSave} className="flex flex-col gap-3">
           <div className="flex items-center mb-6">
-            {imageFile ? (
-              <Avatar className="w-24 h-24 mr-4 rounded-full">
-                <img
-                  src={URL.createObjectURL(imageFile.file)}
-                  alt="Preview"
-                  className="max-w-full max-h-48 object-cover rounded-full"
-                />
-              </Avatar>
-            ) : profile.image ? (
-              <Avatar className="w-24 h-24 mr-4 rounded-full">
-                <img
-                  src={profile.image}
-                  alt="profile-pic"
-                  className="max-w-full max-h-48 object-cover rounded-full"
-                />
-              </Avatar>
-            ) : (
-              <Avatar className="w-24 h-24 mr-4 rounded-full">
-                <span className="text-gray-500 text-xl font-semibold">
-                  {user?.name?.charAt(0)}
-                </span>
-              </Avatar>
-            )}
+            {getAvatarDisplay()}
 
             <Button asChild>
               <div className="relative">
