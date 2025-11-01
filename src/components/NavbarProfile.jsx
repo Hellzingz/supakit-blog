@@ -16,7 +16,7 @@ const NavbarProfile = ({ openMenu }) => {
       >
         <Avatar className="w-10 h-10 flex items-center justify-center rounded-full bg-gray-200">
           {avatar ? (
-            <img src={avatar} className="object-cover rounded-full" />
+            <img src={avatar} className="object-cover rounded-full w-full h-full" />
           ) : (
             <span className="text-gray-500 text-xl font-semibold">
               {name.charAt(0)}
