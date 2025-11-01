@@ -39,7 +39,7 @@ function UserProfileForm() {
           <img
             src={URL.createObjectURL(imageFile.file)}
             alt="Preview"
-            className="max-w-full max-h-48 object-cover rounded-full"
+            className="object-cover rounded-full w-full h-full"
           />
         </Avatar>
       );
@@ -53,7 +53,7 @@ function UserProfileForm() {
           <img
             src={profile.image}
             alt="profile-pic"
-            className="max-w-full max-h-48 object-cover rounded-full"
+            className="object-cover rounded-full w-full h-full"
           />
         </Avatar>
       );

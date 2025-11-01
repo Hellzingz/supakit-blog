@@ -29,7 +29,7 @@ function UserSideBar() {
             <img
             src={state.user.profilePic}
             alt="profile-pic"
-            className="object-cover rounded-full"
+            className="object-cover rounded-full w-full h-full"
             />
           </Avatar>
         ) : (

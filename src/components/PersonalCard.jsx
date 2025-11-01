@@ -8,7 +8,7 @@ function PersonalCard({ data }) {
             <Avatar className="w-20 h-20 rounded-full">
               <img
               src={data?.user?.profile_pic}
-                className="object-cover rounded-full"
+                className="object-cover rounded-full w-full h-full"
                 alt="Profile"
               />
             </Avatar>
